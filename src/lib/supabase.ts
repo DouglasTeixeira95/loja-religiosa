@@ -8,4 +8,7 @@ if (!rawUrl.startsWith('http')) {
   rawUrl = `https://${rawUrl}`
 }
 
+// Remove /rest/v1/ do final ou barras extras (a biblioteca do Supabase já adiciona isso automaticamente)
+rawUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '')
+
 export const supabase = createClient(rawUrl, supabaseAnonKey)
