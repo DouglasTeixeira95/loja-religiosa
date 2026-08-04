@@ -30,7 +30,8 @@ export function PaymentChart() {
           ))}
         </Pie>
         <Tooltip 
-          formatter={(value: number | string) => [`R$ ${Number(value).toFixed(2)}`, 'Total']}
+          // @ts-ignore - Recharts formatter type is complex
+          formatter={(value) => [`R$ ${Number(value || 0).toFixed(2)}`, 'Total']}
           contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
         />
         <Legend />
