@@ -45,8 +45,9 @@ export function ClienteForm() {
       } else {
         alert("Erro ao salvar cliente: " + response.error)
       }
-    } catch (error: any) {
-      alert("Ocorreu um erro inesperado: " + (error?.message || String(error)))
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error)
+      alert("Ocorreu um erro inesperado: " + msg)
     } finally {
       setIsSubmitting(false)
     }

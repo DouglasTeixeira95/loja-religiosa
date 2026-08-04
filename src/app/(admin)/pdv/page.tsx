@@ -61,9 +61,10 @@ export default function PDVPage() {
       } else {
         alert("Erro ao finalizar venda: " + response.error)
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(error)
-      alert("Erro inesperado: " + (error?.message || String(error)))
+      const msg = error instanceof Error ? error.message : String(error)
+      alert("Erro inesperado: " + msg)
     } finally {
       setIsSubmitting(false)
     }
