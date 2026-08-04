@@ -48,14 +48,13 @@ export default async function ClientesPage() {
               <TableHead>Nome</TableHead>
               <TableHead>Telefone</TableHead>
               <TableHead>CPF</TableHead>
-              <TableHead className="text-right">Status Crediário</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {clientes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground h-32">
+                <TableCell colSpan={4} className="text-center text-muted-foreground h-32">
                   Nenhum cliente cadastrado.
                 </TableCell>
               </TableRow>
@@ -66,12 +65,11 @@ export default async function ClientesPage() {
                   <TableCell>{cliente.phone || '-'}</TableCell>
                   <TableCell>{cliente.cpf || '-'}</TableCell>
                   <TableCell className="text-right">
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                      Verificando...
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-blue-600">Ver Conta</Button>
+                    <Link href={`/clientes/${cliente.id}`}>
+                      <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50">
+                        Ver Conta / Cobrança
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))

@@ -2,16 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, Users, ShoppingCart, Calculator, Receipt, DollarSign } from 'lucide-react'
+import { LayoutDashboard, Package, Users, ShoppingCart, Calculator, DollarSign } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Ponto de Venda', href: '/pdv', icon: ShoppingCart },
-  { name: 'Caixa', href: '/caixa', icon: Calculator },
+  { name: 'Vendas', href: '/vendas', icon: Calculator },
   { name: 'Produtos', href: '/produtos', icon: Package },
   { name: 'Clientes', href: '/clientes', icon: Users },
-  { name: 'Crediário', href: '/crediario', icon: Receipt },
   { name: 'Lançamentos', href: '/lancamentos', icon: DollarSign },
 ]
 

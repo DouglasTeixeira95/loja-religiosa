@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Wallet, FileText, Loader2, User } from "lucide-react"
+import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Wallet, FileText, Loader2, User, Printer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { finalizarVenda } from "@/app/actions/vendas"
 import { buscarProduto } from "@/app/actions/produtos"
 import { listarClientes } from "@/app/actions/clientes"
+import { TicketReceipt } from "@/components/pdv/ticket-receipt"
 
 export default function PDVPage() {
   const [cart, setCart] = useState<{ id: string; code: string; name: string; price: number; qty: number }[]>([])
@@ -22,6 +23,7 @@ export default function PDVPage() {
   const [clientes, setClientes] = useState<any[]>([])
   const [selectedCustomer, setSelectedCustomer] = useState<string>("")
   const [isCrediarioModalOpen, setIsCrediarioModalOpen] = useState(false)
+  const [receiptData, setReceiptData] = useState<{ items: any[], total: number, type: 'VENDA'|'ORCAMENTO', paymentMethod?: string, customerName?: string } | null>(null)
 
   useEffect(() => {
     listarClientes().then(setClientes)
@@ -88,7 +90,14 @@ export default function PDVPage() {
     try {
       const response = await finalizarVenda(cart, paymentMethod, customerId)
       if (response.success) {
-        alert(`Venda finalizada com sucesso! Forma: ${paymentMethod}`)
+        const customerName = customerId ? clientes.find(c => c.id === customerId)?.name : undefined
+        setReceiptData({
+          items: cart,
+          total: total,
+          type: 'VENDA',
+          paymentMethod,
+          customerName
+        })
         setCart([])
         setSelectedCustomer("")
         setIsCrediarioModalOpen(false)
@@ -102,6 +111,15 @@ export default function PDVPage() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleOrcamento = () => {
+    if (cart.length === 0) return alert("Adicione itens para gerar orçamento!")
+    setReceiptData({
+      items: cart,
+      total: total,
+      type: 'ORCAMENTO'
+    })
   }
 
   return (
@@ -241,16 +259,40 @@ export default function PDVPage() {
 
             {/* O modal agora lida com o cliente do crediário */}
           </CardContent>
-          <CardFooter className="pt-0">
+          <CardFooter className="pt-0 flex gap-2">
+            <Button 
+              disabled={isSubmitting}
+              onClick={handleOrcamento}
+              variant="outline"
+              className="flex-1 h-14 text-lg border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+              <Printer className="mr-2 h-5 w-5" /> Orçamento
+            </Button>
             <Button 
               disabled={isSubmitting}
               onClick={handleCheckoutClick}
-              className="w-full h-14 text-lg bg-[#d4af37] hover:bg-[#b8860b] text-[#2a0845] font-bold shadow-lg">
+              className="flex-[2] h-14 text-lg bg-[#d4af37] hover:bg-[#b8860b] text-[#2a0845] font-bold shadow-lg">
               {isSubmitting ? <Loader2 className="animate-spin h-6 w-6" /> : 'Finalizar Venda'}
             </Button>
           </CardFooter>
         </Card>
       </div>
+
+      {/* MODAL DE RECIBO / ORÇAMENTO */}
+      <Dialog open={!!receiptData} onOpenChange={(open) => !open && setReceiptData(null)}>
+        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-700 text-white p-0 overflow-hidden">
+          <div className="p-4 bg-white text-black min-h-[400px] flex items-center justify-center">
+            {receiptData && (
+              <TicketReceipt 
+                items={receiptData.items} 
+                total={receiptData.total} 
+                type={receiptData.type} 
+                paymentMethod={receiptData.paymentMethod}
+                customerName={receiptData.customerName}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* MODAL DE CREDIÁRIO */}
       <Dialog open={isCrediarioModalOpen} onOpenChange={setIsCrediarioModalOpen}>

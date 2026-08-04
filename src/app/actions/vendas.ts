@@ -91,3 +91,27 @@ export async function finalizarVenda(
 
   return { success: true, data: sale }
 }
+
+export async function listarVendas() {
+  const { data, error } = await supabase
+    .from('sales')
+    .select(`
+      *,
+      customers ( name ),
+      sale_items (
+        quantity,
+        unit_price,
+        total_price,
+        products ( name:description )
+      )
+    `)
+    .order('created_at', { ascending: false })
+    .limit(50)
+
+  if (error) {
+    console.error('Erro ao listar vendas:', error)
+    return []
+  }
+
+  return data
+}
