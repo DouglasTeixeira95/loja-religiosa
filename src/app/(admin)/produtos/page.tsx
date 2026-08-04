@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { listarProdutos } from "@/app/actions/produtos"
+import { DeleteProductButton } from "@/components/produtos/delete-product-button"
 
 export default async function ProductsPage() {
   const produtos = await listarProdutos()
@@ -53,7 +54,7 @@ export default async function ProductsPage() {
               <TableHead>Tamanho</TableHead>
               <TableHead className="text-right">Estoque</TableHead>
               <TableHead className="text-right">Preço Un.</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+              <TableHead className="text-center">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -71,12 +72,15 @@ export default async function ProductsPage() {
                   <TableCell className="text-slate-300">{produto.size || '-'}</TableCell>
                   <TableCell className="text-right text-white">{produto.stock_quantity}</TableCell>
                   <TableCell className="text-right font-bold text-[#d4af37]">R$ {produto.unit_price.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">
-                    <Link href={`/produtos/${produto.id}/editar`}>
-                      <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
-                        Editar
-                      </Button>
-                    </Link>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center gap-2">
+                      <Link href={`/produtos/${produto.id}/editar`}>
+                        <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
+                          Editar
+                        </Button>
+                      </Link>
+                      <DeleteProductButton id={produto.id} />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

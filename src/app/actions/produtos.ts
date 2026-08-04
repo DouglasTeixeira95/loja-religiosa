@@ -94,3 +94,18 @@ export async function buscarProduto(term: string) {
 
   return { success: true, data: data[0] }
 }
+
+export async function excluirProduto(id: string) {
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Erro ao excluir produto:', error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath('/produtos')
+  return { success: true }
+}
