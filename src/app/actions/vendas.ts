@@ -102,7 +102,7 @@ export async function listarVendas() {
         quantity,
         unit_price,
         total_price,
-        products ( name:description )
+        products ( description )
       )
     `)
     .order('created_at', { ascending: false })

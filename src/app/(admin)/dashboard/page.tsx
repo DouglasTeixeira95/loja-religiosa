@@ -3,8 +3,11 @@ import { DollarSign, Package, ShoppingCart, Users, Sparkles } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { OverviewChart } from "@/components/dashboard/overview-chart"
 import { PaymentChart } from "@/components/dashboard/payment-chart"
+import { buscarEstatisticasDashboard } from "@/app/actions/dashboard"
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const stats = await buscarEstatisticasDashboard()
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -26,9 +29,9 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">R$ 0,00</div>
+            <div className="text-2xl font-bold text-emerald-600">R$ {stats.vendasHoje.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
-              +0% em relação a ontem
+              {stats.qtdVendasHoje} vendas realizadas hoje
             </p>
           </CardContent>
         </Card>
@@ -39,9 +42,9 @@ export default function Dashboard() {
             <Package className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{stats.totalProdutos}</div>
             <p className="text-xs text-muted-foreground">
-              0 produtos com estoque baixo
+              {stats.estoqueBaixo} produtos com estoque baixo
             </p>
           </CardContent>
         </Card>
@@ -52,7 +55,7 @@ export default function Dashboard() {
             <Users className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">R$ 0,00</div>
+            <div className="text-2xl font-bold text-orange-600">R$ {stats.contasAberto.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               Crediário a receber
             </p>
@@ -65,9 +68,9 @@ export default function Dashboard() {
             <ShoppingCart className="h-4 w-4 text-indigo-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{stats.qtdVendasHoje}</div>
             <p className="text-xs text-muted-foreground">
-              +0 vendas na última hora
+              Vendas registradas hoje
             </p>
           </CardContent>
         </Card>
