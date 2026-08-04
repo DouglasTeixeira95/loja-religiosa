@@ -1,30 +1,54 @@
 'use client'
 
 import { useState } from "react"
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Wallet, FileText } from "lucide-react"
+import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Wallet, FileText, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { finalizarVenda } from "@/app/actions/vendas"
 
 export default function PDVPage() {
   const [cart, setCart] = useState<{ id: string; code: string; name: string; price: number; qty: number }[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [paymentMethod, setPaymentMethod] = useState("DINHEIRO")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const total = cart.reduce((acc, item) => acc + item.price * item.qty, 0)
 
-  // Mock function to add item
   const handleAddItem = () => {
     if (!searchTerm) return
     const newItem = {
-      id: Math.random().toString(),
+      id: "uuid-generico-teste", // ID falso até puxarmos a busca real
       code: "1024",
-      name: "Vela 7 Dias " + searchTerm,
+      name: "Produto " + searchTerm,
       price: 15.50,
       qty: 1
     }
     setCart([...cart, newItem])
     setSearchTerm("")
+  }
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) return alert("Adicione itens à venda primeiro!")
+    
+    setIsSubmitting(true)
+    try {
+      // Se for crediário, precisamos do ID do cliente (Mockado por enquanto)
+      const customerId = paymentMethod === 'CREDIARIO' ? 'uuid-cliente-teste' : undefined
+      
+      const response = await finalizarVenda(cart, paymentMethod, customerId)
+      if (response.success) {
+        alert(`Venda finalizada com sucesso! Forma: ${paymentMethod}`)
+        setCart([])
+      } else {
+        alert("Erro ao finalizar venda: " + response.error)
+      }
+    } catch (error) {
+      alert("Erro inesperado.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -50,7 +74,7 @@ export default function PDVPage() {
                   autoFocus
                 />
               </div>
-              <Button size="lg" className="h-12 px-8 bg-primary" onClick={handleAddItem}>
+              <Button size="lg" className="h-12 px-8 bg-[#4a0e4e] hover:bg-[#2a0845] text-white" onClick={handleAddItem}>
                 Inserir
               </Button>
             </div>
@@ -122,34 +146,52 @@ export default function PDVPage() {
               <div className="h-px bg-slate-800 my-4" />
               <div className="flex justify-between items-end">
                 <span className="text-lg">Total</span>
-                <span className="text-4xl font-bold text-emerald-400">R$ {total.toFixed(2)}</span>
+                <span className="text-4xl font-bold text-[#d4af37]">R$ {total.toFixed(2)}</span>
               </div>
             </div>
 
             <div className="space-y-3 pt-6">
               <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">Forma de Pagamento</h4>
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" className="h-14 border-slate-700 bg-slate-800 hover:bg-slate-700 hover:text-white justify-start gap-3">
+                <Button 
+                  onClick={() => setPaymentMethod('DINHEIRO')}
+                  variant={paymentMethod === 'DINHEIRO' ? 'default' : 'outline'} 
+                  className={`h-14 justify-start gap-3 ${paymentMethod === 'DINHEIRO' ? 'bg-[#4a0e4e] border-[#4a0e4e]' : 'border-slate-700 bg-slate-800 hover:bg-slate-700'}`}>
                   <Banknote className="h-5 w-5 text-emerald-400" /> Dinheiro
                 </Button>
-                <Button variant="outline" className="h-14 border-slate-700 bg-slate-800 hover:bg-slate-700 hover:text-white justify-start gap-3">
+                <Button 
+                  onClick={() => setPaymentMethod('PIX')}
+                  variant={paymentMethod === 'PIX' ? 'default' : 'outline'} 
+                  className={`h-14 justify-start gap-3 ${paymentMethod === 'PIX' ? 'bg-[#4a0e4e] border-[#4a0e4e]' : 'border-slate-700 bg-slate-800 hover:bg-slate-700'}`}>
                   <div className="h-5 w-5 font-bold text-teal-400">PIX</div> Pix
                 </Button>
-                <Button variant="outline" className="h-14 border-slate-700 bg-slate-800 hover:bg-slate-700 hover:text-white justify-start gap-3">
+                <Button 
+                  onClick={() => setPaymentMethod('CARTAO_CREDITO')}
+                  variant={paymentMethod === 'CARTAO_CREDITO' ? 'default' : 'outline'} 
+                  className={`h-14 justify-start gap-3 ${paymentMethod === 'CARTAO_CREDITO' ? 'bg-[#4a0e4e] border-[#4a0e4e]' : 'border-slate-700 bg-slate-800 hover:bg-slate-700'}`}>
                   <CreditCard className="h-5 w-5 text-blue-400" /> Crédito
                 </Button>
-                <Button variant="outline" className="h-14 border-slate-700 bg-slate-800 hover:bg-slate-700 hover:text-white justify-start gap-3">
+                <Button 
+                  onClick={() => setPaymentMethod('CARTAO_DEBITO')}
+                  variant={paymentMethod === 'CARTAO_DEBITO' ? 'default' : 'outline'} 
+                  className={`h-14 justify-start gap-3 ${paymentMethod === 'CARTAO_DEBITO' ? 'bg-[#4a0e4e] border-[#4a0e4e]' : 'border-slate-700 bg-slate-800 hover:bg-slate-700'}`}>
                   <Wallet className="h-5 w-5 text-orange-400" /> Débito
                 </Button>
-                <Button variant="outline" className="h-14 border-slate-700 bg-slate-800 hover:bg-slate-700 hover:text-white justify-start gap-3 col-span-2">
+                <Button 
+                  onClick={() => setPaymentMethod('CREDIARIO')}
+                  variant={paymentMethod === 'CREDIARIO' ? 'default' : 'outline'} 
+                  className={`h-14 justify-start gap-3 col-span-2 ${paymentMethod === 'CREDIARIO' ? 'bg-[#4a0e4e] border-[#4a0e4e]' : 'border-slate-700 bg-slate-800 hover:bg-slate-700'}`}>
                   <FileText className="h-5 w-5 text-purple-400" /> Crediário (Conta Cliente)
                 </Button>
               </div>
             </div>
           </CardContent>
           <CardFooter className="pt-0">
-            <Button className="w-full h-14 text-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/20">
-              Finalizar Venda
+            <Button 
+              disabled={isSubmitting}
+              onClick={handleCheckout}
+              className="w-full h-14 text-lg bg-[#d4af37] hover:bg-[#b8860b] text-[#2a0845] font-bold shadow-lg">
+              {isSubmitting ? <Loader2 className="animate-spin h-6 w-6" /> : 'Finalizar Venda'}
             </Button>
           </CardFooter>
         </Card>

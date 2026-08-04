@@ -6,7 +6,7 @@ import { LayoutDashboard, Package, Users, ShoppingCart, Calculator, Receipt, Dol
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Ponto de Venda', href: '/pdv', icon: ShoppingCart },
   { name: 'Caixa', href: '/caixa', icon: Calculator },
   { name: 'Produtos', href: '/produtos', icon: Package },
@@ -22,9 +22,10 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-slate-200/50 bg-slate-50/50 backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-950/50">
       <div className="flex h-full flex-col px-4 py-6">
         <div className="mb-8 px-2">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-            Luz & Fé <span className="text-primary text-sm font-medium">Gestão</span>
+          <h1 className="text-xl font-bold tracking-tight text-[#4a0e4e] dark:text-[#e0c3fc]">
+            Império da Rosa 7
           </h1>
+          <span className="text-[#d4af37] text-xs font-semibold tracking-wider">GESTÃO</span>
         </div>
 
         <nav className="flex-1 space-y-2">

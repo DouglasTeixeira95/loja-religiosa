@@ -18,16 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="antialiased">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
       <body className={`${inter.className} min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50`}>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <div className="flex-1 pl-64 flex flex-col">
-            <Header />
-            <main className="flex-1 p-6">
-              {children}
-            </main>
-          </div>
-        </div>
+        {children}
       </body>
     </html>
   );
