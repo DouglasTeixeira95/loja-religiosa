@@ -18,14 +18,25 @@ export default function LandingPage() {
       {/* Conteúdo principal - precisa ficar acima da sobreposição (z-10) */}
       <div className="relative z-10">
         {/* Navbar simplificada */}
-        <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto">
-        <div className="text-2xl font-bold tracking-wider text-[#ffdf00]">
-          IMPÉRIO DA ROSA 7
-        </div>
-        <Link href="/login" className="px-6 py-2 rounded-full bg-[#d4af37] text-[#2a0845] font-semibold hover:bg-[#ffdf00] transition-colors">
-          Acesso Restrito
-        </Link>
-      </nav>
+        <nav className="flex items-start justify-between p-6 max-w-7xl mx-auto">
+          {/* Spacer esquerdo para centralizar o meio perfeitamente */}
+          <div className="hidden md:block w-32"></div>
+          
+          <div className="flex flex-col items-center gap-3">
+            <img 
+              src="/logo.jpg" 
+              alt="Império da Rosa 7 Logo" 
+              className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/20 object-cover"
+            />
+            <div className="text-2xl md:text-3xl font-extrabold tracking-widest text-[#d4af37] drop-shadow-md">
+              IMPÉRIO DA ROSA 7
+            </div>
+          </div>
+
+          <Link href="/login" className="mt-4 md:mt-0 px-6 py-2 rounded-full bg-gradient-to-r from-[#d4af37] to-[#b8860b] text-[#2a0845] font-semibold hover:scale-105 transition-transform whitespace-nowrap shadow-lg shadow-[#d4af37]/20">
+            Acesso Restrito
+          </Link>
+        </nav>
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-6 pt-20 pb-32 text-center md:text-left flex flex-col md:flex-row items-center gap-12">
