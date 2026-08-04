@@ -39,7 +39,7 @@ export default function LoginPage() {
           <p className="text-[#e0c3fc] text-sm">Painel Administrativo</p>
         </div>
 
-        <div className="p-8">
+        <div className="p-8 text-slate-900">
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Usuário</Label>
@@ -48,7 +48,7 @@ export default function LoginPage() {
                 <Input 
                   id="email" 
                   placeholder="admin" 
-                  className="pl-10 h-12"
+                  className="pl-10 h-12 text-slate-900 placeholder:text-slate-400"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -64,7 +64,7 @@ export default function LoginPage() {
                   id="password" 
                   type="password" 
                   placeholder="••••••••" 
-                  className="pl-10 h-12"
+                  className="pl-10 h-12 text-slate-900 placeholder:text-slate-400"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
