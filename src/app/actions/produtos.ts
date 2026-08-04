@@ -49,3 +49,18 @@ export async function listarProdutos() {
 
   return data
 }
+
+export async function buscarProduto(term: string) {
+  // Tenta buscar por código exato primeiro, ou parte da descrição
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .or(`code.ilike.%${term}%,description.ilike.%${term}%`)
+    .limit(1)
+
+  if (error || !data || data.length === 0) {
+    return { success: false, error: 'Produto não encontrado no banco de dados.' }
+  }
+
+  return { success: true, data: data[0] }
+}

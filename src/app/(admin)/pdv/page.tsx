@@ -7,26 +7,43 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { finalizarVenda } from "@/app/actions/vendas"
+import { buscarProduto } from "@/app/actions/produtos"
 
 export default function PDVPage() {
   const [cart, setCart] = useState<{ id: string; code: string; name: string; price: number; qty: number }[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [paymentMethod, setPaymentMethod] = useState("DINHEIRO")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
 
   const total = cart.reduce((acc, item) => acc + item.price * item.qty, 0)
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
     if (!searchTerm) return
-    const newItem = {
-      id: "uuid-generico-teste", // ID falso até puxarmos a busca real
-      code: "1024",
-      name: "Produto " + searchTerm,
-      price: 15.50,
-      qty: 1
+    setIsSearching(true)
+    
+    try {
+      const res = await buscarProduto(searchTerm)
+      if (!res.success || !res.data) {
+        alert("Produto não encontrado!")
+        return
+      }
+      
+      const produto = res.data
+      const newItem = {
+        id: produto.id,
+        code: produto.code,
+        name: produto.description,
+        price: produto.unit_price,
+        qty: 1
+      }
+      setCart([...cart, newItem])
+      setSearchTerm("")
+    } catch (error) {
+      alert("Erro ao buscar o produto.")
+    } finally {
+      setIsSearching(false)
     }
-    setCart([...cart, newItem])
-    setSearchTerm("")
   }
 
   const handleCheckout = async () => {
@@ -44,8 +61,9 @@ export default function PDVPage() {
       } else {
         alert("Erro ao finalizar venda: " + response.error)
       }
-    } catch (error) {
-      alert("Erro inesperado.")
+    } catch (error: any) {
+      console.error(error)
+      alert("Erro inesperado: " + (error?.message || String(error)))
     } finally {
       setIsSubmitting(false)
     }
