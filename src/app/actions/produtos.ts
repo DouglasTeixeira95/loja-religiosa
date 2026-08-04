@@ -50,6 +50,36 @@ export async function listarProdutos() {
   return data
 }
 
+export async function atualizarProduto(id: string, data: any) {
+  const { error } = await supabase
+    .from('products')
+    .update(data)
+    .eq('id', id)
+
+  if (error) {
+    console.error('Erro ao atualizar produto:', error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath('/produtos')
+  return { success: true }
+}
+
+export async function buscarProdutoPorId(id: string) {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    console.error('Erro ao buscar produto por ID:', error)
+    return null
+  }
+  
+  return data
+}
+
 export async function buscarProduto(term: string) {
   // Tenta buscar por código exato primeiro, ou parte da descrição
   const { data, error } = await supabase

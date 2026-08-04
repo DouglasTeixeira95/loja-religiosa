@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { finalizarVenda } from "@/app/actions/vendas"
 import { buscarProduto } from "@/app/actions/produtos"
 import { listarClientes } from "@/app/actions/clientes"
@@ -20,6 +21,7 @@ export default function PDVPage() {
   
   const [clientes, setClientes] = useState<any[]>([])
   const [selectedCustomer, setSelectedCustomer] = useState<string>("")
+  const [isCrediarioModalOpen, setIsCrediarioModalOpen] = useState(false)
 
   useEffect(() => {
     listarClientes().then(setClientes)
@@ -70,25 +72,26 @@ export default function PDVPage() {
     }
   }
 
-  const handleCheckout = async () => {
+  const handleCheckoutClick = () => {
     if (cart.length === 0) return alert("Adicione itens à venda primeiro!")
     
+    if (paymentMethod === 'CREDIARIO') {
+      setIsCrediarioModalOpen(true)
+      return
+    }
+
+    processCheckout(undefined)
+  }
+
+  const processCheckout = async (customerId?: string) => {
     setIsSubmitting(true)
     try {
-      // Se for crediário, precisamos do ID do cliente
-      if (paymentMethod === 'CREDIARIO' && !selectedCustomer) {
-        alert("Selecione um cliente para o crediário!")
-        setIsSubmitting(false)
-        return
-      }
-      
-      const customerId = paymentMethod === 'CREDIARIO' ? selectedCustomer : undefined
-      
       const response = await finalizarVenda(cart, paymentMethod, customerId)
       if (response.success) {
         alert(`Venda finalizada com sucesso! Forma: ${paymentMethod}`)
         setCart([])
         setSelectedCustomer("")
+        setIsCrediarioModalOpen(false)
       } else {
         alert("Erro ao finalizar venda: " + response.error)
       }
@@ -236,34 +239,61 @@ export default function PDVPage() {
               </div>
             </div>
 
-            {paymentMethod === 'CREDIARIO' && (
-              <div className="space-y-3 pt-4 border-t border-slate-800">
-                <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">Cliente (Crediário)</h4>
-                <Select value={selectedCustomer} onValueChange={(val) => setSelectedCustomer(val || "")}>
-                  <SelectTrigger className="w-full h-12 bg-slate-800 border-slate-700">
-                    <SelectValue placeholder="Selecione o cliente cadastrado...">
-                      {selectedCustomer ? clientes.find(c => c.id === selectedCustomer)?.name : "Selecione o cliente cadastrado..."}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clientes.map(cliente => (
-                      <SelectItem key={cliente.id} value={cliente.id}>{cliente.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            {/* O modal agora lida com o cliente do crediário */}
           </CardContent>
           <CardFooter className="pt-0">
             <Button 
               disabled={isSubmitting}
-              onClick={handleCheckout}
+              onClick={handleCheckoutClick}
               className="w-full h-14 text-lg bg-[#d4af37] hover:bg-[#b8860b] text-[#2a0845] font-bold shadow-lg">
               {isSubmitting ? <Loader2 className="animate-spin h-6 w-6" /> : 'Finalizar Venda'}
             </Button>
           </CardFooter>
         </Card>
       </div>
+
+      {/* MODAL DE CREDIÁRIO */}
+      <Dialog open={isCrediarioModalOpen} onOpenChange={setIsCrediarioModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-[#d4af37]">Finalizar Venda no Crediário</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Selecione para qual cliente cadastrado esta venda será lançada.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Select value={selectedCustomer} onValueChange={(val) => setSelectedCustomer(val || "")}>
+                <SelectTrigger className="w-full h-12 bg-slate-800 border-slate-700">
+                  <SelectValue placeholder="Selecione o cliente...">
+                    {selectedCustomer ? clientes.find(c => c.id === selectedCustomer)?.name : "Selecione o cliente..."}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {clientes.map(cliente => (
+                    <SelectItem key={cliente.id} value={cliente.id}>{cliente.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCrediarioModalOpen(false)} className="border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => {
+                if (!selectedCustomer) return alert("Selecione um cliente!")
+                processCheckout(selectedCustomer)
+              }} 
+              disabled={isSubmitting || !selectedCustomer}
+              className="bg-[#d4af37] hover:bg-[#b8860b] text-[#2a0845] font-bold">
+              {isSubmitting ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : null}
+              Confirmar Lançamento
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ArrowLeft, Save, Loader2 } from "lucide-react"
-import { criarProduto } from "@/app/actions/produtos"
+import { criarProduto, atualizarProduto } from "@/app/actions/produtos"
 import { useState } from "react"
 
 const produtoSchema = z.object({
@@ -23,13 +23,14 @@ const produtoSchema = z.object({
 
 type ProdutoFormValues = z.infer<typeof produtoSchema>
 
-export function ProdutoForm() {
+export function ProdutoForm({ initialData }: { initialData?: any }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isEditing = !!initialData
   
   const form = useForm<ProdutoFormValues>({
     resolver: zodResolver(produtoSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       code: "",
       description: "",
       stock_quantity: 0,
@@ -42,9 +43,15 @@ export function ProdutoForm() {
   const onSubmit = async (data: ProdutoFormValues) => {
     setIsSubmitting(true)
     try {
-      const response = await criarProduto(data)
+      let response
+      if (isEditing) {
+        response = await atualizarProduto(initialData.id, data)
+      } else {
+        response = await criarProduto(data)
+      }
+      
       if (response.success) {
-        alert("Produto salvo com sucesso!")
+        alert(`Produto ${isEditing ? 'atualizado' : 'salvo'} com sucesso!`)
         router.push("/produtos")
       } else {
         alert("Erro ao salvar produto: " + response.error)
@@ -63,9 +70,9 @@ export function ProdutoForm() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Cadastrar Produto</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{isEditing ? 'Editar Produto' : 'Cadastrar Produto'}</h2>
           <p className="text-muted-foreground text-sm">
-            Adicione um novo item ao seu estoque.
+            {isEditing ? 'Atualize as informações do produto.' : 'Adicione um novo item ao seu estoque.'}
           </p>
         </div>
       </div>

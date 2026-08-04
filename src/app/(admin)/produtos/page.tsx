@@ -72,7 +72,11 @@ export default async function ProductsPage() {
                   <TableCell className="text-right">{produto.stock_quantity}</TableCell>
                   <TableCell className="text-right">R$ {produto.unit_price.toFixed(2)}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-blue-600">Editar</Button>
+                    <Link href={`/produtos/${produto.id}/editar`}>
+                      <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50">
+                        Editar
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))
