@@ -93,11 +93,10 @@ export async function finalizarVenda(
 }
 
 export async function listarVendas() {
-  const { data, error } = await supabase
+  const { data: sales, error } = await supabase
     .from('sales')
     .select(`
       *,
-      customers ( name ),
       sale_items (
         quantity,
         unit_price,
@@ -109,9 +108,20 @@ export async function listarVendas() {
     .limit(50)
 
   if (error) {
-    console.error('Erro ao listar vendas:', error)
+    console.error('Erro detalhado ao listar vendas:', JSON.stringify(error, null, 2))
     return []
   }
 
-  return data
+  // Busca os clientes separadamente para evitar erro de Foreign Key no Supabase
+  const { data: customers } = await supabase.from('customers').select('id, name')
+  const customersMap = new Map(customers?.map(c => [c.id, c.name]) || [])
+
+  const salesWithCustomers = sales?.map(sale => ({
+    ...sale,
+    customers: {
+      name: sale.customer_id ? customersMap.get(sale.customer_id) : undefined
+    }
+  })) || []
+
+  return salesWithCustomers
 }
