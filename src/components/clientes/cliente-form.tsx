@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ArrowLeft, Save, Loader2 } from "lucide-react"
 import { useState } from "react"
-// import { criarCliente } from "@/app/actions/clientes"
+import { criarCliente } from "@/app/actions/clientes"
 
 const clienteSchema = z.object({
   name: z.string().min(3, "O nome deve ter no mínimo 3 caracteres"),
@@ -38,12 +38,15 @@ export function ClienteForm() {
   const onSubmit = async (data: ClienteFormValues) => {
     setIsSubmitting(true)
     try {
-      // Mock for now since supabase is not connected
-      console.log(data)
-      alert("Cliente salvo com sucesso!")
-      router.push("/clientes")
-    } catch (error) {
-      alert("Ocorreu um erro inesperado.")
+      const response = await criarCliente(data)
+      if (response.success) {
+        alert("Cliente salvo com sucesso!")
+        router.push("/clientes")
+      } else {
+        alert("Erro ao salvar cliente: " + response.error)
+      }
+    } catch (error: any) {
+      alert("Ocorreu um erro inesperado: " + (error?.message || String(error)))
     } finally {
       setIsSubmitting(false)
     }

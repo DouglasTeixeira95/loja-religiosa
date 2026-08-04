@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, Search, UserCheck, AlertCircle } from "lucide-react"
+import { UserPlus, Search, UserCheck, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import {
   Table,
@@ -10,20 +10,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { listarClientes } from "@/app/actions/clientes"
 
-export default function ClientesPage() {
+export default async function ClientesPage() {
+  const clientes = await listarClientes()
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Clientes</h2>
           <p className="text-muted-foreground mt-1">
-            Gerencie o cadastro de clientes e as contas de crediário.
+            Gerencie o cadastro de clientes e contas de crediário.
           </p>
         </div>
         <Link href="/clientes/novo">
           <Button className="bg-primary shadow-lg shadow-primary/20 transition-transform active:scale-95">
-            <Plus className="mr-2 h-4 w-4" /> Novo Cliente
+            <UserPlus className="mr-2 h-4 w-4" /> Novo Cliente
           </Button>
         </Link>
       </div>
@@ -43,18 +46,36 @@ export default function ClientesPage() {
           <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
             <TableRow>
               <TableHead>Nome</TableHead>
-              <TableHead>CPF</TableHead>
               <TableHead>Telefone</TableHead>
-              <TableHead className="text-right">Crediário Pendente</TableHead>
+              <TableHead>CPF</TableHead>
+              <TableHead className="text-right">Status Crediário</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground h-32">
-                Nenhum cliente cadastrado.
-              </TableCell>
-            </TableRow>
+            {clientes.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-muted-foreground h-32">
+                  Nenhum cliente cadastrado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              clientes.map(cliente => (
+                <TableRow key={cliente.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <TableCell className="font-medium">{cliente.name}</TableCell>
+                  <TableCell>{cliente.phone || '-'}</TableCell>
+                  <TableCell>{cliente.cpf || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                      Verificando...
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm" className="text-blue-600">Ver Conta</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

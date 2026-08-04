@@ -19,9 +19,7 @@ export async function criarProduto(data: {
         description: data.description,
         stock_quantity: data.stock_quantity,
         size: data.size,
-        unit_price: data.unit_price,
-        box_price: data.box_price,
-        cost_price: 0 // Será atualizado futuramente com o sistema de lançamentos
+        unit_price: data.unit_price
       }
     ])
     .select()

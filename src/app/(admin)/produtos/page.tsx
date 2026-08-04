@@ -10,8 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { listarProdutos } from "@/app/actions/produtos"
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const produtos = await listarProdutos()
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -54,12 +57,26 @@ export default function ProductsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* Lista mockada de exemplo - integraremos com Supabase em breve */}
-            <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground h-32">
-                Nenhum produto cadastrado.
-              </TableCell>
-            </TableRow>
+            {produtos.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-muted-foreground h-32">
+                  Nenhum produto cadastrado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              produtos.map(produto => (
+                <TableRow key={produto.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <TableCell className="font-medium">{produto.code}</TableCell>
+                  <TableCell>{produto.description}</TableCell>
+                  <TableCell>{produto.size || '-'}</TableCell>
+                  <TableCell className="text-right">{produto.stock_quantity}</TableCell>
+                  <TableCell className="text-right">R$ {produto.unit_price.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm" className="text-blue-600">Editar</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
