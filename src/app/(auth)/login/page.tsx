@@ -6,22 +6,27 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Lock, User } from "lucide-react"
+import { checkLogin } from "@/app/actions/auth"
 
 export default function LoginPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [username, setUsername] = useState("admin")
+  const [password, setPassword] = useState("123456")
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     
-    // Mock login by saving a token and redirecting
-    setTimeout(() => {
-      // Usaremos localStorage provisório apenas para permitir avançar. 
-      // Na vida real isso seria feito com NextAuth ou Supabase Session no server.
+    const res = await checkLogin(username, password)
+    
+    if (res.success) {
       localStorage.setItem('admin_token', 'true')
       router.push('/dashboard')
-    }, 1000)
+    } else {
+      alert(res.error || "Erro ao fazer login")
+      setLoading(false)
+    }
   }
 
   return (
@@ -44,7 +49,8 @@ export default function LoginPage() {
                   id="email" 
                   placeholder="admin" 
                   className="pl-10 h-12"
-                  defaultValue="admin"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
@@ -59,7 +65,8 @@ export default function LoginPage() {
                   type="password" 
                   placeholder="••••••••" 
                   className="pl-10 h-12"
-                  defaultValue="123456"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
