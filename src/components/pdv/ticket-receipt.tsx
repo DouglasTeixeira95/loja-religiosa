@@ -24,66 +24,81 @@ export function TicketReceipt({ items, total, type, paymentMethod, customerName,
   }
 
   return (
-    <div className="flex flex-col items-center max-w-sm mx-auto">
+    <div className="flex flex-col items-center w-full max-w-2xl mx-auto">
       <div 
         id="print-area" 
-        className="bg-white text-black p-6 w-full shadow-lg font-mono text-sm print:shadow-none print:p-0"
-        style={{ width: '80mm', minHeight: '100px' }}
+        className="bg-white text-slate-800 p-8 w-full shadow-lg font-sans text-sm print:shadow-none print:p-0"
+        style={{ minHeight: '297mm', width: '210mm', maxWidth: '100%' }}
       >
-        <div className="text-center mb-4">
-          <h2 className="font-bold text-lg uppercase">Império da Rosa 7</h2>
-          <p className="text-xs">Artigos Religiosos</p>
-          <p className="text-xs mt-2 border-b border-dashed border-gray-400 pb-2">
-            {type === 'ORCAMENTO' ? '*** ORÇAMENTO ***' : 'CUPOM NÃO FISCAL'}
-          </p>
+        <div className="flex justify-between items-start border-b-2 border-slate-200 pb-6 mb-6">
+          <div>
+            <h2 className="font-bold text-2xl uppercase tracking-wider text-slate-900">Império da Rosa 7</h2>
+            <p className="text-slate-500">Artigos Religiosos</p>
+          </div>
+          <div className="text-right">
+            <h1 className="text-xl font-bold uppercase text-indigo-600">
+              {type === 'ORCAMENTO' ? 'Orçamento' : 'Recibo de Venda'}
+            </h1>
+            <p className="text-slate-500 mt-1">Data: {dataEmissao}</p>
+          </div>
         </div>
 
-        <div className="text-xs mb-2">
-          <p>DATA: {dataEmissao}</p>
-          {customerName && <p>CLIENTE: {customerName}</p>}
-        </div>
+        {customerName && (
+          <div className="bg-slate-50 p-4 rounded-lg mb-6 border border-slate-100">
+            <h3 className="text-xs uppercase font-bold text-slate-400 mb-1">Cliente</h3>
+            <p className="font-medium text-slate-900 text-lg">{customerName}</p>
+          </div>
+        )}
 
-        <table className="w-full text-xs border-t border-b border-dashed border-gray-400 my-2 py-2">
+        <table className="w-full text-left border-collapse mb-8">
           <thead>
-            <tr className="text-left">
-              <th className="font-normal pb-1">QTD</th>
-              <th className="font-normal pb-1">DESCRIÇÃO</th>
-              <th className="font-normal text-right pb-1">V.UN</th>
-              <th className="font-normal text-right pb-1">TOTAL</th>
+            <tr className="border-b-2 border-slate-200 text-slate-500">
+              <th className="font-semibold py-3 px-2">Descrição do Produto</th>
+              <th className="font-semibold py-3 px-2 text-center w-20">Qtd</th>
+              <th className="font-semibold py-3 px-2 text-right w-32">V. Unitário</th>
+              <th className="font-semibold py-3 px-2 text-right w-32">Total</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, idx) => (
-              <tr key={idx} className="align-top">
-                <td className="pt-1">{item.qty}</td>
-                <td className="pt-1 pr-1">{item.name.substring(0, 20)}</td>
-                <td className="pt-1 text-right">{item.price.toFixed(2)}</td>
-                <td className="pt-1 text-right">{(item.qty * item.price).toFixed(2)}</td>
+              <tr key={idx} className="border-b border-slate-100">
+                <td className="py-3 px-2 text-slate-700">{item.name}</td>
+                <td className="py-3 px-2 text-center text-slate-600">{item.qty}</td>
+                <td className="py-3 px-2 text-right text-slate-600">R$ {item.price.toFixed(2)}</td>
+                <td className="py-3 px-2 text-right font-medium text-slate-800">R$ {(item.qty * item.price).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div className="text-right mt-2 text-sm">
-          <p>Subtotal: R$ {total.toFixed(2)}</p>
-          <p className="font-bold text-base mt-1">TOTAL: R$ {total.toFixed(2)}</p>
+        <div className="flex justify-end">
+          <div className="w-64 space-y-3">
+            <div className="flex justify-between text-slate-600">
+              <span>Subtotal:</span>
+              <span>R$ {total.toFixed(2)}</span>
+            </div>
+            {paymentMethod && (
+              <div className="flex justify-between text-slate-600">
+                <span>Pagamento:</span>
+                <span className="capitalize">{paymentMethod.toLowerCase().replace('_', ' ')}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-xl font-bold text-slate-900 pt-3 border-t-2 border-slate-200">
+              <span>Total:</span>
+              <span>R$ {total.toFixed(2)}</span>
+            </div>
+          </div>
         </div>
 
-        {paymentMethod && (
-          <div className="mt-4 pt-2 border-t border-dashed border-gray-400 text-xs">
-            <p>FORMA DE PAGAMENTO: {paymentMethod}</p>
-          </div>
-        )}
-
-        <div className="text-center mt-6 text-xs text-gray-500">
-          <p>{type === 'ORCAMENTO' ? 'Válido por 7 dias' : 'Obrigado pela preferência!'}</p>
-          <p className="mt-1">Volte Sempre!</p>
+        <div className="mt-16 text-center text-slate-500 text-sm">
+          <p>{type === 'ORCAMENTO' ? 'Este orçamento é válido por 7 dias.' : 'Obrigado pela preferência!'}</p>
+          <p className="mt-2 text-xs">Império da Rosa 7 - Todos os direitos reservados</p>
         </div>
       </div>
 
-      <div className="mt-6 flex w-full gap-4 print:hidden">
-        <Button onClick={handlePrint} className="w-full bg-slate-800 hover:bg-slate-700">
-          <Printer className="mr-2 h-4 w-4" /> Imprimir Recibo
+      <div className="mt-6 flex w-full gap-4 print:hidden justify-end">
+        <Button onClick={handlePrint} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Printer className="mr-2 h-4 w-4" /> Imprimir Documento
         </Button>
       </div>
 
@@ -99,9 +114,10 @@ export function TicketReceipt({ items, total, type, paymentMethod, customerName,
             position: absolute;
             left: 0;
             top: 0;
-            width: 80mm !important;
+            width: 100% !important;
+            min-height: auto !important;
             margin: 0;
-            padding: 0;
+            padding: 20mm;
           }
         }
       `}} />

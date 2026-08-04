@@ -17,9 +17,6 @@ export default async function Dashboard() {
             Visão geral da sua loja de artigos religiosos.
           </p>
         </div>
-        <Button className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 shadow-lg transition-transform active:scale-95 text-white border-0">
-          <Sparkles className="mr-2 h-4 w-4" /> Gerar Relatório de Lucro com IA
-        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

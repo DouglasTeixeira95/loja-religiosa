@@ -90,14 +90,7 @@ export default function PDVPage() {
     try {
       const response = await finalizarVenda(cart, paymentMethod, customerId)
       if (response.success) {
-        const customerName = customerId ? clientes.find(c => c.id === customerId)?.name : undefined
-        setReceiptData({
-          items: cart,
-          total: total,
-          type: 'VENDA',
-          paymentMethod,
-          customerName
-        })
+        alert("Venda finalizada com sucesso!")
         setCart([])
         setSelectedCustomer("")
         setIsCrediarioModalOpen(false)
