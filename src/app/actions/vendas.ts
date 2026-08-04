@@ -56,6 +56,24 @@ export async function finalizarVenda(
     return { success: false, error: itemsError.message }
   }
 
+  // 3. Subtrair o Estoque dos Produtos
+  for (const item of cart) {
+    // Busca a quantidade atual
+    const { data: productData, error: productError } = await supabase
+      .from('products')
+      .select('stock_quantity')
+      .eq('id', item.id)
+      .single()
+      
+    if (productData && !productError) {
+      const newStock = productData.stock_quantity - item.qty
+      await supabase
+        .from('products')
+        .update({ stock_quantity: newStock })
+        .eq('id', item.id)
+    }
+  }
+
   // Se for crediário, cria a dívida na conta do cliente
   if (paymentMethod === 'CREDIARIO' && customerId) {
     const { error: accountError } = await supabase

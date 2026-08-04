@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from "react"
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Wallet, FileText, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Wallet, FileText, Loader2, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { finalizarVenda } from "@/app/actions/vendas"
 import { buscarProduto } from "@/app/actions/produtos"
+import { listarClientes } from "@/app/actions/clientes"
 
 export default function PDVPage() {
   const [cart, setCart] = useState<{ id: string; code: string; name: string; price: number; qty: number }[]>([])
@@ -15,6 +17,13 @@ export default function PDVPage() {
   const [paymentMethod, setPaymentMethod] = useState("DINHEIRO")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  
+  const [clientes, setClientes] = useState<any[]>([])
+  const [selectedCustomer, setSelectedCustomer] = useState<string>("")
+
+  useEffect(() => {
+    listarClientes().then(setClientes)
+  }, [])
 
   const total = cart.reduce((acc, item) => acc + item.price * item.qty, 0)
 
@@ -66,13 +75,20 @@ export default function PDVPage() {
     
     setIsSubmitting(true)
     try {
-      // Se for crediário, precisamos do ID do cliente (Mockado por enquanto)
-      const customerId = paymentMethod === 'CREDIARIO' ? 'uuid-cliente-teste' : undefined
+      // Se for crediário, precisamos do ID do cliente
+      if (paymentMethod === 'CREDIARIO' && !selectedCustomer) {
+        alert("Selecione um cliente para o crediário!")
+        setIsSubmitting(false)
+        return
+      }
+      
+      const customerId = paymentMethod === 'CREDIARIO' ? selectedCustomer : undefined
       
       const response = await finalizarVenda(cart, paymentMethod, customerId)
       if (response.success) {
         alert(`Venda finalizada com sucesso! Forma: ${paymentMethod}`)
         setCart([])
+        setSelectedCustomer("")
       } else {
         alert("Erro ao finalizar venda: " + response.error)
       }
@@ -219,6 +235,22 @@ export default function PDVPage() {
                 </Button>
               </div>
             </div>
+
+            {paymentMethod === 'CREDIARIO' && (
+              <div className="space-y-3 pt-4 border-t border-slate-800">
+                <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">Cliente (Crediário)</h4>
+                <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                  <SelectTrigger className="w-full h-12 bg-slate-800 border-slate-700">
+                    <SelectValue placeholder="Selecione o cliente cadastrado..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clientes.map(cliente => (
+                      <SelectItem key={cliente.id} value={cliente.id}>{cliente.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="pt-0">
             <Button 
