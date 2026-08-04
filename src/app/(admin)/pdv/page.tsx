@@ -239,7 +239,7 @@ export default function PDVPage() {
             {paymentMethod === 'CREDIARIO' && (
               <div className="space-y-3 pt-4 border-t border-slate-800">
                 <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">Cliente (Crediário)</h4>
-                <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                <Select value={selectedCustomer} onValueChange={(val) => setSelectedCustomer(val || "")}>
                   <SelectTrigger className="w-full h-12 bg-slate-800 border-slate-700">
                     <SelectValue placeholder="Selecione o cliente cadastrado..." />
                   </SelectTrigger>
