@@ -1,6 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
+let rawUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co').trim()
+const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder').trim()
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Garante que a URL tem https:// caso o usuário tenha esquecido na hora de copiar
+if (!rawUrl.startsWith('http')) {
+  rawUrl = `https://${rawUrl}`
+}
+
+export const supabase = createClient(rawUrl, supabaseAnonKey)
