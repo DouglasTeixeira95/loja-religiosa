@@ -17,22 +17,7 @@ type Lancamento = {
 }
 
 export default function LancamentosPage() {
-  const [lancamentos, setLancamentos] = useState<Lancamento[]>([
-    {
-      id: '1',
-      created_at: new Date().toISOString(),
-      description: 'Compra: Fornecedor Velas Luz',
-      type: 'COMPRA_ESTOQUE',
-      amount: 1500
-    },
-    {
-      id: '2',
-      created_at: new Date(Date.now() - 86400000).toISOString(), // ontem
-      description: 'Conta de Energia Elétrica',
-      type: 'DESPESA_GERAL',
-      amount: 240
-    }
-  ])
+  const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<'COMPRA_ESTOQUE' | 'DESPESA_GERAL'>('DESPESA_GERAL')

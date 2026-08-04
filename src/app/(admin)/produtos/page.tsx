@@ -55,24 +55,9 @@ export default function ProductsPage() {
           </TableHeader>
           <TableBody>
             {/* Lista mockada de exemplo - integraremos com Supabase em breve */}
-            <TableRow className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-              <TableCell className="font-medium">1001</TableCell>
-              <TableCell>Vela 7 Dias Branca</TableCell>
-              <TableCell>Único</TableCell>
-              <TableCell className="text-right">45</TableCell>
-              <TableCell className="text-right">R$ 7,50</TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="sm" className="text-blue-600">Editar</Button>
-              </TableCell>
-            </TableRow>
-            <TableRow className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-              <TableCell className="font-medium">2043</TableCell>
-              <TableCell>Imagem N. Sra Aparecida</TableCell>
-              <TableCell>30cm</TableCell>
-              <TableCell className="text-right">5</TableCell>
-              <TableCell className="text-right">R$ 145,00</TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="sm" className="text-blue-600">Editar</Button>
+            <TableRow>
+              <TableCell colSpan={6} className="text-center text-muted-foreground h-32">
+                Nenhum produto cadastrado.
               </TableCell>
             </TableRow>
           </TableBody>

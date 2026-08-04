@@ -50,26 +50,9 @@ export default function ClientesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-              <TableCell className="font-medium">Maria das Graças</TableCell>
-              <TableCell>123.456.789-00</TableCell>
-              <TableCell>(11) 98765-4321</TableCell>
-              <TableCell className="text-right font-medium text-orange-600 flex justify-end items-center gap-2">
-                <AlertCircle className="h-4 w-4" /> R$ 340,00
-              </TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="sm" className="text-blue-600">Ver Extrato</Button>
-              </TableCell>
-            </TableRow>
-            <TableRow className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-              <TableCell className="font-medium">José Pereira</TableCell>
-              <TableCell>987.654.321-11</TableCell>
-              <TableCell>(11) 91234-5678</TableCell>
-              <TableCell className="text-right font-medium text-emerald-600 flex justify-end items-center gap-2">
-                <UserCheck className="h-4 w-4" /> Sem débitos
-              </TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="sm" className="text-blue-600">Ver Extrato</Button>
+            <TableRow>
+              <TableCell colSpan={5} className="text-center text-muted-foreground h-32">
+                Nenhum cliente cadastrado.
               </TableCell>
             </TableRow>
           </TableBody>
