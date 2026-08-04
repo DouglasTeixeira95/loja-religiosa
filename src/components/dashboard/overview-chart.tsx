@@ -3,12 +3,12 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts"
 
 const data = [
-  { name: "Segunda", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Terça", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Quarta", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Quinta", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Sexta", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Sábado", total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: "Segunda", total: 0 },
+  { name: "Terça", total: 0 },
+  { name: "Quarta", total: 0 },
+  { name: "Quinta", total: 0 },
+  { name: "Sexta", total: 0 },
+  { name: "Sábado", total: 0 },
 ]
 
 export function OverviewChart() {

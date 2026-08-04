@@ -3,11 +3,11 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 
 const data = [
-  { name: 'Pix', value: 4500 },
-  { name: 'Dinheiro', value: 1200 },
-  { name: 'Crédito', value: 3800 },
-  { name: 'Débito', value: 2400 },
-  { name: 'Crediário', value: 1500 },
+  { name: 'Pix', value: 0, fill: 'var(--color-pix)' },
+  { name: 'Dinheiro', value: 0, fill: 'var(--color-dinheiro)' },
+  { name: 'Crédito', value: 0, fill: 'var(--color-credito)' },
+  { name: 'Débito', value: 0, fill: 'var(--color-debito)' },
+  { name: 'Crediário', value: 0, fill: 'var(--color-crediario)' },
 ]
 
 const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#6366f1', '#a855f7']
