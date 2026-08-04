@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="antialiased">
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-      <body className={`${inter.className} min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50`}>
+      <body className={`${inter.className} min-h-screen bg-gradient-to-br from-[#2a0845] to-[#4a0e4e] text-slate-100`}>
         {children}
       </body>
     </html>
