@@ -18,6 +18,21 @@ export default function PDVPage() {
 
   const total = cart.reduce((acc, item) => acc + item.price * item.qty, 0)
 
+  const updateQty = (index: number, delta: number) => {
+    const newCart = [...cart]
+    newCart[index].qty += delta
+    if (newCart[index].qty <= 0) {
+      newCart.splice(index, 1)
+    }
+    setCart(newCart)
+  }
+
+  const removeItem = (index: number) => {
+    const newCart = [...cart]
+    newCart.splice(index, 1)
+    setCart(newCart)
+  }
+
   const handleAddItem = async () => {
     if (!searchTerm) return
     setIsSearching(true)
@@ -125,15 +140,15 @@ export default function PDVPage() {
                       <TableCell className="font-semibold">{item.name}</TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="icon" className="h-6 w-6"><Minus className="h-3 w-3" /></Button>
+                          <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQty(idx, -1)}><Minus className="h-3 w-3" /></Button>
                           <span className="w-8 text-center">{item.qty}</span>
-                          <Button variant="outline" size="icon" className="h-6 w-6"><Plus className="h-3 w-3" /></Button>
+                          <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQty(idx, 1)}><Plus className="h-3 w-3" /></Button>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">R$ {item.price.toFixed(2)}</TableCell>
                       <TableCell className="text-right font-bold">R$ {(item.price * item.qty).toFixed(2)}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" className="text-red-500 h-8 w-8 hover:bg-red-50 dark:hover:bg-red-950/50">
+                        <Button variant="ghost" size="icon" className="text-red-500 h-8 w-8 hover:bg-red-50 dark:hover:bg-red-950/50" onClick={() => removeItem(idx)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>

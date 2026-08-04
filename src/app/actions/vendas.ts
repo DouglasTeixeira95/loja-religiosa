@@ -17,14 +17,19 @@ export async function finalizarVenda(
 ) {
   const totalAmount = cart.reduce((acc, item) => acc + (item.price * item.qty), 0)
 
+  const salePayload: any = {
+    total_amount: totalAmount,
+    payment_method: paymentMethod,
+  }
+  
+  if (customerId) {
+    salePayload.customer_id = customerId
+  }
+
   // 1. Criar a Venda (Sale)
   const { data: sale, error: saleError } = await supabase
     .from('sales')
-    .insert([{
-      total_amount: totalAmount,
-      payment_method: paymentMethod,
-      customer_id: customerId || null
-    }])
+    .insert([salePayload])
     .select()
     .single()
 
