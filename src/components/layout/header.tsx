@@ -1,8 +1,18 @@
-import { Bell, Search, UserCircle } from 'lucide-react'
+'use client'
+
+import { Bell, Search, UserCircle, LogOut } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 export function Header() {
+  const router = useRouter()
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token')
+    router.push('/login')
+  }
+
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-white/10 bg-black/10 px-6 backdrop-blur-xl">
       <div className="flex flex-1 items-center gap-4">
@@ -25,12 +35,21 @@ export function Header() {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d4af37]/20 text-[#d4af37]">
             <UserCircle className="h-5 w-5" />
           </div>
-          <div className="hidden flex-col md:flex">
+          <div className="hidden flex-col md:flex mr-2">
             <span className="text-sm font-medium leading-none text-white">
               Administrador
             </span>
             <span className="text-xs text-slate-300 mt-1">Admin</span>
           </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleLogout}
+            title="Sair do sistema"
+            className="text-red-400 hover:text-red-300 hover:bg-red-500/20 ml-2"
+          >
+            <LogOut className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </header>
