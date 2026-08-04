@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Search, Receipt } from "lucide-react"
+import { Search, Receipt, Trash2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -13,20 +13,39 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { listarVendas } from "@/app/actions/vendas"
+import { listarVendas, excluirVenda } from "@/app/actions/vendas"
 import { TicketReceipt } from "@/components/pdv/ticket-receipt"
 
 export default function VendasPage() {
   const [vendas, setVendas] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedReceipt, setSelectedReceipt] = useState<any>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  useEffect(() => {
+  const carregarVendas = () => {
+    setLoading(true)
     listarVendas().then((data) => {
       setVendas(data)
       setLoading(false)
     })
+  }
+
+  useEffect(() => {
+    carregarVendas()
   }, [])
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Tem certeza que deseja cancelar e excluir esta venda? O estoque será devolvido e a operação não poderá ser desfeita.")) {
+      setIsDeleting(true)
+      const res = await excluirVenda(id)
+      if (res.success) {
+        carregarVendas()
+      } else {
+        alert(res.error || "Erro ao excluir venda")
+      }
+      setIsDeleting(false)
+    }
+  }
 
   const handlePrintReceipt = (venda: any) => {
     // Converter itens do bd pro formato do ticket
@@ -65,7 +84,7 @@ export default function VendasPage() {
               <TableHead>Cliente</TableHead>
               <TableHead>Forma de Pagamento</TableHead>
               <TableHead className="text-right">Valor Total</TableHead>
-              <TableHead className="text-center">Recibo</TableHead>
+              <TableHead className="text-center">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -95,13 +114,25 @@ export default function VendasPage() {
                     R$ {venda.total_amount.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Button 
-                      onClick={() => handlePrintReceipt(venda)}
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50">
-                      <Receipt className="h-4 w-4" />
-                    </Button>
+                    <div className="flex justify-center gap-2">
+                      <Button 
+                        onClick={() => handlePrintReceipt(venda)}
+                        variant="ghost" 
+                        size="sm" 
+                        title="Imprimir Recibo"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50">
+                        <Receipt className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        onClick={() => handleDelete(venda.id)}
+                        variant="ghost" 
+                        size="sm" 
+                        disabled={isDeleting}
+                        title="Cancelar Venda"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/50">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

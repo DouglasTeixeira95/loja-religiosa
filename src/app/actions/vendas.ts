@@ -125,3 +125,59 @@ export async function listarVendas() {
 
   return salesWithCustomers
 }
+
+export async function excluirVenda(saleId: string) {
+  // 1. Busca os itens da venda para devolver ao estoque
+  const { data: items, error: itemsError } = await supabase
+    .from('sale_items')
+    .select('product_id, quantity')
+    .eq('sale_id', saleId)
+
+  if (itemsError) {
+    console.error('Erro ao buscar itens para exclusão:', itemsError)
+    return { success: false, error: 'Erro ao buscar itens da venda.' }
+  }
+
+  // 2. Devolve o estoque
+  if (items && items.length > 0) {
+    for (const item of items) {
+      const { data: product } = await supabase
+        .from('products')
+        .select('stock_quantity')
+        .eq('id', item.product_id)
+        .single()
+        
+      if (product) {
+        await supabase
+          .from('products')
+          .update({ stock_quantity: product.stock_quantity + item.quantity })
+          .eq('id', item.product_id)
+      }
+    }
+  }
+
+  // 3. Remove lançamento de crediário caso exista (evitar erro de Foreign Key constraint)
+  await supabase
+    .from('customer_accounts')
+    .delete()
+    .eq('sale_id', saleId)
+
+  // 4. Remove os itens da venda (caso ON DELETE CASCADE não esteja ativo)
+  await supabase
+    .from('sale_items')
+    .delete()
+    .eq('sale_id', saleId)
+
+  // 5. Remove a venda em si
+  const { error: deleteError } = await supabase
+    .from('sales')
+    .delete()
+    .eq('id', saleId)
+
+  if (deleteError) {
+    console.error('Erro ao excluir venda:', deleteError)
+    return { success: false, error: 'Erro ao excluir a venda do histórico.' }
+  }
+
+  return { success: true }
+}
