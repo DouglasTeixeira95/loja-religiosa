@@ -120,18 +120,18 @@ export default function PDVPage() {
       {/* Esquerda: Pesquisa e Lista de Produtos */}
       <div className="flex-1 flex flex-col gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Ponto de Venda</h2>
-          <p className="text-muted-foreground mt-1">Busque produtos pelo código ou descrição para adicionar à venda.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-white">Ponto de Venda</h2>
+          <p className="text-slate-300 mt-1">Busque produtos pelo código ou descrição para adicionar à venda.</p>
         </div>
 
-        <Card className="bg-white/50 backdrop-blur-xl border-slate-200/60 dark:bg-slate-900/50 flex-1 flex flex-col overflow-hidden">
+        <Card className="bg-black/20 backdrop-blur-xl border-white/10 text-white flex-1 flex flex-col overflow-hidden">
           <CardHeader className="pb-4">
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-5 w-5 text-slate-400" />
                 <Input 
                   placeholder="Código de barras ou descrição..." 
-                  className="pl-10 text-lg h-12 bg-white/80 dark:bg-slate-950/80"
+                  className="pl-10 text-lg h-12 bg-black/20 border-white/10 text-white placeholder:text-slate-400"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
@@ -146,7 +146,7 @@ export default function PDVPage() {
           
           <CardContent className="flex-1 overflow-auto p-0">
             <Table>
-              <TableHeader className="bg-slate-50/50 sticky top-0 dark:bg-slate-800/50">
+              <TableHeader className="bg-black/40 sticky top-0">
                 <TableRow>
                   <TableHead className="w-[100px]">Cód.</TableHead>
                   <TableHead>Produto</TableHead>
@@ -159,26 +159,26 @@ export default function PDVPage() {
               <TableBody>
                 {cart.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-48 text-center text-muted-foreground">
+                    <TableCell colSpan={6} className="h-48 text-center text-slate-400">
                       Nenhum item adicionado à venda.
                     </TableCell>
                   </TableRow>
                 ) : (
                   cart.map((item, idx) => (
-                    <TableRow key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
-                      <TableCell className="font-medium text-slate-500">{item.code}</TableCell>
-                      <TableCell className="font-semibold">{item.name}</TableCell>
+                    <TableRow key={idx} className="hover:bg-white/10 border-white/10 transition-colors">
+                      <TableCell className="font-medium text-slate-300">{item.code}</TableCell>
+                      <TableCell className="font-semibold text-white">{item.name}</TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQty(idx, -1)}><Minus className="h-3 w-3" /></Button>
-                          <span className="w-8 text-center">{item.qty}</span>
-                          <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQty(idx, 1)}><Plus className="h-3 w-3" /></Button>
+                          <Button variant="outline" size="icon" className="h-6 w-6 border-white/20 bg-white/5 hover:bg-white/10 hover:text-white" onClick={() => updateQty(idx, -1)}><Minus className="h-3 w-3" /></Button>
+                          <span className="w-8 text-center text-white">{item.qty}</span>
+                          <Button variant="outline" size="icon" className="h-6 w-6 border-white/20 bg-white/5 hover:bg-white/10 hover:text-white" onClick={() => updateQty(idx, 1)}><Plus className="h-3 w-3" /></Button>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">R$ {item.price.toFixed(2)}</TableCell>
-                      <TableCell className="text-right font-bold">R$ {(item.price * item.qty).toFixed(2)}</TableCell>
+                      <TableCell className="text-right text-slate-300">R$ {item.price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-bold text-[#d4af37]">R$ {(item.price * item.qty).toFixed(2)}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" className="text-red-500 h-8 w-8 hover:bg-red-50 dark:hover:bg-red-950/50" onClick={() => removeItem(idx)}>
+                        <Button variant="ghost" size="icon" className="text-red-400 h-8 w-8 hover:bg-red-500/20" onClick={() => removeItem(idx)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>

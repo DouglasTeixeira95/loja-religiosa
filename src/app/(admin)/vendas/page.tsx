@@ -69,16 +69,16 @@ export default function VendasPage() {
     <div className="space-y-6 relative">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Histórico de Vendas</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-3xl font-bold tracking-tight text-white">Histórico de Vendas</h2>
+          <p className="text-slate-300 mt-1">
             Acompanhe todas as vendas realizadas no PDV.
           </p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200/60 bg-white/50 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-900/50 overflow-hidden">
+      <div className="rounded-xl border border-white/10 bg-black/20 backdrop-blur-xl overflow-hidden text-white">
         <Table>
-          <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
+          <TableHeader className="bg-black/40 hover:bg-black/40">
             <TableRow>
               <TableHead>Data</TableHead>
               <TableHead>Cliente</TableHead>
@@ -92,21 +92,21 @@ export default function VendasPage() {
               <TableRow><TableCell colSpan={5} className="text-center h-32">Carregando...</TableCell></TableRow>
             ) : vendas.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground h-32">
+                <TableCell colSpan={5} className="text-center text-slate-400 h-32">
                   Nenhuma venda registrada ainda.
                 </TableCell>
               </TableRow>
             ) : (
               vendas.map((venda: any) => (
-                <TableRow key={venda.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <TableRow key={venda.id} className="hover:bg-white/10 border-white/10 transition-colors">
                   <TableCell>
                     {new Date(venda.created_at).toLocaleDateString('pt-BR')} às {new Date(venda.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                   </TableCell>
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium text-white">
                     {venda.customers?.name || 'Cliente Avulso'}
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold text-white">
                       {venda.payment_method}
                     </span>
                   </TableCell>
@@ -120,7 +120,7 @@ export default function VendasPage() {
                         variant="ghost" 
                         size="sm" 
                         title="Imprimir Recibo"
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50">
+                        className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
                         <Receipt className="h-4 w-4" />
                       </Button>
                       <Button 
@@ -129,7 +129,7 @@ export default function VendasPage() {
                         size="sm" 
                         disabled={isDeleting}
                         title="Cancelar Venda"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/50">
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/20">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
