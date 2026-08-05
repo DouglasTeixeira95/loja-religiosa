@@ -23,7 +23,7 @@ export function Sidebar() {
       <div className="flex h-full flex-col px-4 py-6">
         <div className="mb-8 px-2">
           <h1 className="text-xl font-bold tracking-tight text-white">
-            Império da Rosa 7
+            Império da Rosa
           </h1>
           <span className="text-[#d4af37] text-xs font-semibold tracking-wider">GESTÃO</span>
         </div>

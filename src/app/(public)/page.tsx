@@ -25,11 +25,11 @@ export default function LandingPage() {
           <div className="flex flex-col items-center gap-3">
             <img 
               src="/logo.jpg" 
-              alt="Império da Rosa 7 Logo" 
+              alt="Império da Rosa Logo" 
               className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/20 object-cover"
             />
             <div className="text-2xl md:text-3xl font-extrabold tracking-widest text-[#d4af37] drop-shadow-md">
-              IMPÉRIO DA ROSA 7
+              IMPÉRIO DA ROSA
             </div>
           </div>
 

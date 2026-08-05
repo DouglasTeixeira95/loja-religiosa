@@ -35,7 +35,7 @@ export default function LoginPage() {
         
         {/* Header do Login temático */}
         <div className="bg-gradient-to-br from-[#2a0845] to-[#4a0e4e] p-8 text-center">
-          <h1 className="text-3xl font-bold text-[#d4af37] tracking-wider mb-2">IMPÉRIO DA ROSA 7</h1>
+          <h1 className="text-3xl font-bold text-[#d4af37] tracking-wider mb-2">IMPÉRIO DA ROSA</h1>
           <p className="text-[#e0c3fc] text-sm">Painel Administrativo</p>
         </div>
 
