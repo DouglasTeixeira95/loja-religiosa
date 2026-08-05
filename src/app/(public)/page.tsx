@@ -43,15 +43,15 @@ export default function LandingPage() {
         <div className="flex-1 space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#e0c3fc]">
             <Sparkles className="w-4 h-4 text-[#d4af37]" />
-            <span className="text-sm font-medium tracking-wide">Artigos Religiosos</span>
+            <span className="text-sm font-medium tracking-wide">Sistema de Gestão</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight">
-            Temos tudo o que você precisa para suas <span className="text-[#d4af37] drop-shadow-md">obrigações</span>
+            Gestão inteligente com o respeito que o <span className="text-[#d4af37] drop-shadow-md">Sagrado</span> merece
           </h1>
           
           <p className="text-xl text-[#e0c3fc] max-w-2xl leading-relaxed">
-            Feito com fé e dedicação. Aqui sua obrigação é levada a sério. Atendimento com respeito, sigilo e qualidade que você merece.
+            Controle total do seu estoque, clientes e fluxo de caixa. A tecnologia a serviço da sua loja, garantindo organização com eficiência e simplicidade.
           </p>
 
           <div className="pt-4 flex items-center justify-center md:justify-start gap-4">
@@ -69,22 +69,22 @@ export default function LandingPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#d4af37] to-amber-600 flex items-center justify-center">👑</div>
                   <div>
-                    <h3 className="font-bold text-lg">Aqui sua obrigação é levada a sério</h3>
-                    <p className="text-sm text-amber-200/60">Fé, respeito e qualidade</p>
+                    <h3 className="font-bold text-lg">Controle de Estoque</h3>
+                    <p className="text-sm text-amber-200/60">Nunca deixe faltar o essencial</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center">💜</div>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center">💻</div>
                   <div>
-                    <h3 className="font-bold text-lg">Atendimento Sigiloso</h3>
-                    <p className="text-sm text-amber-200/60">Com total discrição</p>
+                    <h3 className="font-bold text-lg">Ponto de Venda Ágil</h3>
+                    <p className="text-sm text-amber-200/60">Vendas rápidas e seguras</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">🕯️</div>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">🛡️</div>
                   <div>
-                    <h3 className="font-bold text-lg">Produtos de Excelência</h3>
-                    <p className="text-sm text-amber-200/60">As melhores marcas</p>
+                    <h3 className="font-bold text-lg">Dados Protegidos</h3>
+                    <p className="text-sm text-amber-200/60">Sua gestão com total segurança</p>
                   </div>
                 </div>
              </div>
