@@ -74,6 +74,19 @@ export async function registrarPagamentoCrediario(customerId: string, amount: nu
   return { success: true }
 }
 
+export async function excluirTransacaoCliente(transactionId: string) {
+  const { error } = await supabase
+    .from('customer_accounts')
+    .delete()
+    .eq('id', transactionId)
+
+  if (error) {
+    console.error('Erro ao excluir transação:', error)
+    return { success: false, error: error.message }
+  }
+  return { success: true }
+}
+
 export async function listarClientes() {
   const { data, error } = await supabase
     .from('customers')

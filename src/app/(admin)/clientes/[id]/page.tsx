@@ -5,7 +5,7 @@ import { buscarClienteComCrediario, registrarPagamentoCrediario } from "@/app/ac
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Wallet, Loader2 } from "lucide-react"
+import { ArrowLeft, Wallet, Loader2, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -105,12 +105,13 @@ export default function ClientePerfilPage() {
               <TableHead>Descrição</TableHead>
               <TableHead>Tipo</TableHead>
               <TableHead className="text-right">Valor</TableHead>
+              <TableHead className="text-center">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {cliente.accounts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground h-32">
+                <TableCell colSpan={5} className="text-center text-muted-foreground h-32">
                   Nenhum registro encontrado.
                 </TableCell>
               </TableRow>
@@ -128,6 +129,27 @@ export default function ClientePerfilPage() {
                   </TableCell>
                   <TableCell className={`text-right font-bold ${acc.type === 'DEBITO' ? 'text-rose-600' : 'text-emerald-600'}`}>
                     {acc.type === 'DEBITO' ? '-' : '+'} R$ {acc.amount.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={async () => {
+                        if (window.confirm("Deseja realmente excluir este lançamento? Esta ação não pode ser desfeita.")) {
+                          const { excluirTransacaoCliente } = await import("@/app/actions/clientes");
+                          const res = await excluirTransacaoCliente(acc.id);
+                          if (res.success) {
+                            loadCliente();
+                          } else {
+                            alert("Erro ao excluir lançamento: " + res.error);
+                          }
+                        }
+                      }}
+                      className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                      title="Excluir lançamento"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
