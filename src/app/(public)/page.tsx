@@ -1,7 +1,10 @@
 import Link from "next/link"
 import { Sparkles, ArrowRight } from "lucide-react"
+import { getCustomLogo } from "@/app/actions/settings"
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const customLogo = await getCustomLogo()
+  const logoUrl = customLogo || "/logo.jpg"
   return (
     <div 
       className="min-h-screen text-amber-50 relative overflow-hidden"
@@ -24,7 +27,7 @@ export default function LandingPage() {
           
           <div className="flex flex-col items-center gap-3">
             <img 
-              src="/logo.jpg" 
+              src={logoUrl}
               alt="Império da Rosa Logo" 
               className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/20 object-cover"
             />

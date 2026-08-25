@@ -4,12 +4,34 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Lock, Save } from "lucide-react"
+import { Lock, Save, Image as ImageIcon } from "lucide-react"
 import { changePassword } from "@/app/actions/auth"
+import { setCustomLogo } from "@/app/actions/settings"
 
 export default function ConfiguracoesPage() {
   const [loading, setLoading] = useState(false)
   const [password, setPassword] = useState("")
+  const [logoLoading, setLogoLoading] = useState(false)
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Convert to Base64
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = async () => {
+      const base64 = reader.result as string
+      setLogoLoading(true)
+      const res = await setCustomLogo(base64)
+      setLogoLoading(false)
+      if (res.success) {
+        alert("Logo atualizada com sucesso! Recarregue a página (F5) para ver as mudanças.")
+      } else {
+        alert("Erro ao atualizar logo: " + res.error)
+      }
+    }
+  }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,6 +91,32 @@ export default function ConfiguracoesPage() {
               {loading ? "Salvando..." : "Salvar Nova Senha"}
             </Button>
           </form>
+        </div>
+
+        {/* LOGO UPLOAD SECTION */}
+        <div className="rounded-xl border border-slate-200/60 bg-white/50 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-900/50 p-6">
+          <h3 className="text-lg font-semibold flex items-center mb-4">
+            <ImageIcon className="mr-2 h-5 w-5 text-[#d4af37]" />
+            Personalizar Logo da Loja
+          </h3>
+          
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Selecione uma imagem do seu computador para usar como logo no sistema e na página inicial.
+            </p>
+            
+            <div className="space-y-2">
+              <Label>Escolher Imagem (JPG ou PNG)</Label>
+              <Input 
+                type="file" 
+                accept="image/*"
+                onChange={handleLogoUpload}
+                disabled={logoLoading}
+              />
+            </div>
+            
+            {logoLoading && <p className="text-sm text-blue-500">Fazendo upload e atualizando o sistema...</p>}
+          </div>
         </div>
       </div>
     </div>

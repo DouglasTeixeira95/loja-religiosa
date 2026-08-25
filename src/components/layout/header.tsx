@@ -4,9 +4,18 @@ import { Bell, Search, UserCircle, LogOut } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { getCustomLogo } from '@/app/actions/settings'
 
 export function Header() {
   const router = useRouter()
+  const [logoUrl, setLogoUrl] = useState("/logo.jpg")
+
+  useEffect(() => {
+    getCustomLogo().then(base64 => {
+      if (base64) setLogoUrl(base64)
+    })
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
@@ -33,7 +42,7 @@ export function Header() {
         <div className="h-8 w-px bg-white/20" />
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-full overflow-hidden border border-[#d4af37]/50 shadow-md">
-            <img src="/logo.jpg" alt="Logo Império da Rosa" className="h-full w-full object-cover" />
+            <img src={logoUrl} alt="Logo da Loja" className="h-full w-full object-cover" />
           </div>
           <div className="hidden flex-col md:flex mr-2">
             <span className="text-sm font-medium leading-none text-white">
