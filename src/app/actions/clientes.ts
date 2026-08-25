@@ -100,3 +100,23 @@ export async function listarClientes() {
 
   return data || []
 }
+
+export async function alternarStatusCliente(id: string, currentName: string) {
+  const isInactive = currentName.startsWith('[INATIVO] ')
+  const newName = isInactive 
+    ? currentName.replace('[INATIVO] ', '') 
+    : `[INATIVO] ${currentName}`
+
+  const { error } = await supabase
+    .from('customers')
+    .update({ name: newName })
+    .eq('id', id)
+
+  if (error) {
+    console.error('Erro ao alterar status do cliente:', error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath('/clientes')
+  return { success: true }
+}

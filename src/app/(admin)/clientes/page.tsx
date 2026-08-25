@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { listarClientes } from "@/app/actions/clientes"
+import { ToggleCustomerButton } from "@/components/clientes/toggle-customer-button"
 
 export default async function ClientesPage() {
   const clientes = await listarClientes()
@@ -48,7 +49,7 @@ export default async function ClientesPage() {
               <TableHead>Nome</TableHead>
               <TableHead>Telefone</TableHead>
               <TableHead>CPF</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+              <TableHead className="text-center">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -59,20 +60,26 @@ export default async function ClientesPage() {
                 </TableCell>
               </TableRow>
             ) : (
-              clientes.map(cliente => (
-                <TableRow key={cliente.id} className="hover:bg-white/10 border-white/10 transition-colors">
-                  <TableCell className="font-medium text-slate-300">{cliente.name}</TableCell>
-                  <TableCell className="text-white">{cliente.phone || '-'}</TableCell>
-                  <TableCell className="text-white">{cliente.cpf || '-'}</TableCell>
-                  <TableCell className="text-right">
-                    <Link href={`/clientes/${cliente.id}`}>
-                      <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
-                        Ver Conta / Cobrança
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
+              clientes.map(cliente => {
+                const isInactive = cliente.name.startsWith('[INATIVO]')
+                return (
+                  <TableRow key={cliente.id} className={`hover:bg-white/10 border-white/10 transition-colors ${isInactive ? 'opacity-50 grayscale' : ''}`}>
+                    <TableCell className="font-medium text-slate-300">{cliente.name}</TableCell>
+                    <TableCell className="text-white">{cliente.phone || '-'}</TableCell>
+                    <TableCell className="text-white">{cliente.cpf || '-'}</TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center gap-2">
+                        <Link href={`/clientes/${cliente.id}`}>
+                          <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
+                            Ver Conta / Cobrança
+                          </Button>
+                        </Link>
+                        <ToggleCustomerButton id={cliente.id} name={cliente.name} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             )}
           </TableBody>
         </Table>
