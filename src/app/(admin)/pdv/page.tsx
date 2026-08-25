@@ -251,7 +251,7 @@ export default function PDVPage() {
               <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">
                 Vincular Cliente {paymentMethod !== 'CREDIARIO' && <span className="text-xs normal-case opacity-70">(Opcional)</span>}
               </h4>
-              <Select value={selectedCustomer} onValueChange={(val) => setSelectedCustomer(val)}>
+              <Select value={selectedCustomer} onValueChange={(val) => setSelectedCustomer(val || "")}>
                 <SelectTrigger className={`w-full h-12 bg-slate-800 border-slate-700 text-slate-200 ${paymentMethod === 'CREDIARIO' && !selectedCustomer ? 'border-red-500/50' : ''}`}>
                   <SelectValue placeholder="Selecione um cliente...">
                     {selectedCustomer ? clientes.find(c => c.id === selectedCustomer)?.name : "Selecione o cliente..."}
