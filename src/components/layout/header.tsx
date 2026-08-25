@@ -32,8 +32,8 @@ export function Header() {
         </Button>
         <div className="h-8 w-px bg-white/20" />
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d4af37]/20 text-[#d4af37]">
-            <UserCircle className="h-5 w-5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full overflow-hidden border border-[#d4af37]/50 shadow-md">
+            <img src="/logo.jpg" alt="Logo Império da Rosa" className="h-full w-full object-cover" />
           </div>
           <div className="hidden flex-col md:flex mr-2">
             <span className="text-sm font-medium leading-none text-white">
