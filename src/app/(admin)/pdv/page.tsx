@@ -22,7 +22,6 @@ export default function PDVPage() {
   
   const [clientes, setClientes] = useState<any[]>([])
   const [selectedCustomer, setSelectedCustomer] = useState<string>("")
-  const [isCrediarioModalOpen, setIsCrediarioModalOpen] = useState(false)
   const [receiptData, setReceiptData] = useState<{ items: any[], total: number, type: 'VENDA'|'ORCAMENTO', paymentMethod?: string, customerName?: string } | null>(null)
 
   useEffect(() => {
@@ -92,7 +91,6 @@ export default function PDVPage() {
         alert("Venda finalizada com sucesso!")
         setCart([])
         setSelectedCustomer("")
-        setIsCrediarioModalOpen(false)
       } else {
         alert("Erro ao finalizar venda: " + response.error)
       }
