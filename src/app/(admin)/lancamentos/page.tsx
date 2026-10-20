@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { ArrowDownRight, Plus, Search, Loader2, X } from "lucide-react"
+import { ArrowDownRight, Plus, Search, Loader2, X, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { criarLancamento, listarLancamentos } from "@/app/actions/lancamentos"
+import { criarLancamento, listarLancamentos, excluirLancamento } from "@/app/actions/lancamentos"
 
 type Lancamento = {
   id: string;
@@ -18,6 +18,8 @@ type Lancamento = {
 
 export default function LancamentosPage() {
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<'COMPRA_ESTOQUE' | 'DESPESA_GERAL'>('DESPESA_GERAL')
@@ -27,10 +29,15 @@ export default function LancamentosPage() {
   const [amount, setAmount] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const carregarLancamentos = async () => {
+    setLoading(true)
+    const data = await listarLancamentos()
+    setLancamentos(data as Lancamento[])
+    setLoading(false)
+  }
+
   useEffect(() => {
-    listarLancamentos().then((data) => {
-      setLancamentos(data as Lancamento[])
-    })
+    carregarLancamentos()
   }, [])
 
   const openModal = (type: 'COMPRA_ESTOQUE' | 'DESPESA_GERAL') => {
@@ -49,6 +56,16 @@ export default function LancamentosPage() {
     const u = parseFloat(newUnit.replace(',', '.'))
     if (!isNaN(q) && !isNaN(u) && q > 0 && u >= 0) {
       setAmount((q * u).toFixed(2))
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Deseja realmente excluir este lançamento?")) return
+    const res = await excluirLancamento(id)
+    if (res.success) {
+      setLancamentos(lancamentos.filter(item => item.id !== id))
+    } else {
+      alert("Erro ao excluir lançamento: " + res.error)
     }
   }
 
@@ -84,12 +101,16 @@ export default function LancamentosPage() {
     setIsSubmitting(false)
   }
 
+  const lancamentosFiltrados = lancamentos.filter(item =>
+    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <div className="space-y-6 relative">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Lançamentos</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-3xl font-bold tracking-tight text-white">Lançamentos</h2>
+          <p className="text-slate-300 mt-1">
             Registre compras para reposição de estoque e despesas da loja.
           </p>
         </div>
@@ -97,7 +118,7 @@ export default function LancamentosPage() {
           <Button 
             onClick={() => openModal('DESPESA_GERAL')}
             variant="outline" 
-            className="text-rose-600 border-rose-200 bg-rose-50 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-900 dark:bg-rose-950/30 dark:hover:bg-rose-900/50">
+            className="text-rose-200 border-rose-500/40 bg-rose-500/20 hover:bg-rose-500/30 hover:text-white">
             <ArrowDownRight className="mr-2 h-4 w-4" /> Nova Despesa
           </Button>
           <Button 
@@ -109,67 +130,104 @@ export default function LancamentosPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-slate-200/60 bg-white/50 backdrop-blur-xl p-6 dark:border-slate-800/60 dark:bg-slate-900/50">
-          <p className="text-sm font-medium text-slate-500">Compras de Estoque (Mês)</p>
-          <h3 className="text-2xl font-bold mt-2 text-emerald-600">
-            R$ {lancamentos.filter(l => l.type === 'COMPRA_ESTOQUE').reduce((a, b) => a + b.amount, 0).toFixed(2)}
+        <div className="rounded-xl border border-white/10 bg-black/20 backdrop-blur-xl p-6 text-white">
+          <p className="text-sm font-medium text-slate-300">Compras de Estoque (Mês)</p>
+          <h3 className="text-2xl font-bold mt-2 text-emerald-400">
+            R$ {lancamentos.filter(l => l.type === 'COMPRA_ESTOQUE').reduce((a, b) => a + Number(b.amount || 0), 0).toFixed(2)}
           </h3>
         </div>
-        <div className="rounded-xl border border-slate-200/60 bg-white/50 backdrop-blur-xl p-6 dark:border-slate-800/60 dark:bg-slate-900/50">
-          <p className="text-sm font-medium text-slate-500">Despesas Gerais (Mês)</p>
-          <h3 className="text-2xl font-bold mt-2 text-rose-600">
-            R$ {lancamentos.filter(l => l.type === 'DESPESA_GERAL').reduce((a, b) => a + b.amount, 0).toFixed(2)}
+        <div className="rounded-xl border border-white/10 bg-black/20 backdrop-blur-xl p-6 text-white">
+          <p className="text-sm font-medium text-slate-300">Despesas Gerais (Mês)</p>
+          <h3 className="text-2xl font-bold mt-2 text-rose-400">
+            R$ {lancamentos.filter(l => l.type === 'DESPESA_GERAL').reduce((a, b) => a + Number(b.amount || 0), 0).toFixed(2)}
           </h3>
         </div>
-        <div className="rounded-xl border border-slate-200/60 bg-white/50 backdrop-blur-xl p-6 dark:border-slate-800/60 dark:bg-slate-900/50">
-          <p className="text-sm font-medium text-slate-500">Total Gasto (Mês)</p>
-          <h3 className="text-2xl font-bold mt-2">
-            R$ {lancamentos.reduce((a, b) => a + b.amount, 0).toFixed(2)}
+        <div className="rounded-xl border border-white/10 bg-black/20 backdrop-blur-xl p-6 text-white">
+          <p className="text-sm font-medium text-slate-300">Total Gasto (Mês)</p>
+          <h3 className="text-2xl font-bold mt-2 text-white">
+            R$ {lancamentos.reduce((a, b) => a + Number(b.amount || 0), 0).toFixed(2)}
           </h3>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200/60 bg-white/50 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-900/50 overflow-hidden">
-        <div className="p-4 border-b border-slate-200/60 dark:border-slate-800/60">
+      <div className="rounded-xl border border-white/10 bg-black/20 backdrop-blur-xl overflow-hidden text-white">
+        <div className="p-4 border-b border-white/10">
           <div className="relative max-w-md">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-            <Input placeholder="Buscar lançamento..." className="pl-9 bg-transparent" />
+            <Input
+              placeholder="Buscar lançamento..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 bg-black/20 border-white/10 text-white placeholder:text-slate-400"
+            />
           </div>
         </div>
         <Table>
-          <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
+          <TableHeader className="bg-black/40 hover:bg-black/40">
             <TableRow>
               <TableHead>Data</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead>Tipo</TableHead>
               <TableHead className="text-right">Valor</TableHead>
+              <TableHead className="text-center">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {lancamentos.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{new Date(item.created_at).toLocaleDateString('pt-BR')} às {new Date(item.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                <TableCell className="font-medium">{item.description}</TableCell>
-                <TableCell>
-                  {item.type === 'COMPRA_ESTOQUE' ? (
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">Reposição de Estoque</span>
-                  ) : (
-                    <span className="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-semibold text-rose-800 dark:bg-rose-900/30 dark:text-rose-400">Despesa Geral</span>
-                  )}
-                </TableCell>
-                <TableCell className={`text-right font-medium ${item.type === 'COMPRA_ESTOQUE' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                  R$ {item.amount.toFixed(2)}
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-slate-300 h-32">
+                  Carregando lançamentos...
                 </TableCell>
               </TableRow>
-            ))}
+            ) : lancamentosFiltrados.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-slate-400 h-32">
+                  Nenhum lançamento registrado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              lancamentosFiltrados.map((item) => (
+                <TableRow key={item.id} className="hover:bg-white/10 border-white/10 transition-colors">
+                  <TableCell className="text-slate-300">
+                    {new Date(item.created_at).toLocaleDateString('pt-BR')} às {new Date(item.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  </TableCell>
+                  <TableCell className="font-medium text-white">{item.description}</TableCell>
+                  <TableCell>
+                    {item.type === 'COMPRA_ESTOQUE' ? (
+                      <span className="inline-flex items-center rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
+                        Reposição de Estoque
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-rose-500/20 px-2.5 py-0.5 text-xs font-semibold text-rose-300 border border-rose-500/30">
+                        Despesa Geral
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className={`text-right font-bold ${item.type === 'COMPRA_ESTOQUE' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    R$ {Number(item.amount || 0).toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(item.id)}
+                      title="Excluir lançamento"
+                      className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
       {/* Modal Customizado */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white text-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200">
             <div className={`p-6 text-white ${modalType === 'COMPRA_ESTOQUE' ? 'bg-[#4a0e4e]' : 'bg-rose-600'}`}>
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-bold">
@@ -183,12 +241,13 @@ export default function LancamentosPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
+                <Label htmlFor="description" className="text-slate-800 font-semibold">Descrição</Label>
                 <Input 
                   id="description" 
                   placeholder={modalType === 'COMPRA_ESTOQUE' ? "Ex: Alguidar número 4" : "Ex: Conta de Energia"} 
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
                   required 
                   autoFocus
                 />
@@ -197,7 +256,7 @@ export default function LancamentosPage() {
               {modalType === 'COMPRA_ESTOQUE' && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="quantity">Quantidade Comprada</Label>
+                    <Label htmlFor="quantity" className="text-slate-800 font-semibold">Quantidade Comprada</Label>
                     <Input 
                       id="quantity" 
                       placeholder="Ex: 5" 
@@ -206,10 +265,11 @@ export default function LancamentosPage() {
                       step="1"
                       value={quantity}
                       onChange={(e) => handleQuantityOrUnitChange(e.target.value, unitPrice)}
+                      className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="unitPrice">Valor Pago por Un. (R$)</Label>
+                    <Label htmlFor="unitPrice" className="text-slate-800 font-semibold">Valor Pago por Un. (R$)</Label>
                     <Input 
                       id="unitPrice" 
                       placeholder="Ex: 20,00" 
@@ -217,13 +277,14 @@ export default function LancamentosPage() {
                       step="0.01"
                       value={unitPrice}
                       onChange={(e) => handleQuantityOrUnitChange(quantity, e.target.value)}
+                      className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
                     />
                   </div>
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="amount">
+                <Label htmlFor="amount" className="text-slate-800 font-semibold">
                   {modalType === 'COMPRA_ESTOQUE' ? 'Valor Total Investido (R$)' : 'Valor (R$)'}
                 </Label>
                 <Input 
@@ -233,20 +294,28 @@ export default function LancamentosPage() {
                   step="0.01"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400 font-bold"
                   required 
                 />
                 {modalType === 'COMPRA_ESTOQUE' && unitPrice && quantity && (
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                  <p className="text-xs text-emerald-700 font-semibold bg-emerald-50 p-2 rounded-lg border border-emerald-200">
                     Cálculo automático: {quantity} × R$ {parseFloat(unitPrice.replace(',', '.') || '0').toFixed(2)} = R$ {amount}
                   </p>
                 )}
               </div>
               <div className="pt-4 flex justify-end gap-3">
-                <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                  className="border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium"
+                >
+                  Cancelar
+                </Button>
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className={modalType === 'COMPRA_ESTOQUE' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'}>
+                  className={modalType === 'COMPRA_ESTOQUE' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white'}>
                   {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Confirmar e Salvar
                 </Button>

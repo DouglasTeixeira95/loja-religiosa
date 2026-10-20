@@ -160,26 +160,27 @@ export default function ClientePerfilPage() {
 
       {/* MODAL PAGAMENTO */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] bg-white text-slate-900 border-slate-200">
           <DialogHeader>
-            <DialogTitle>Registrar Pagamento</DialogTitle>
+            <DialogTitle className="text-slate-900 font-bold">Registrar Pagamento</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label>Valor Recebido (R$)</Label>
+              <Label className="text-slate-800 font-semibold">Valor Recebido (R$)</Label>
               <Input 
                 type="number" 
                 step="0.01" 
                 value={pagamentoValor} 
                 onChange={e => setPagamentoValor(e.target.value)} 
                 placeholder="Ex: 50.00"
+                className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
               />
-              <p className="text-xs text-muted-foreground">O cliente deve R$ {cliente.saldoDevedor.toFixed(2)} no total.</p>
+              <p className="text-xs text-slate-600">O cliente deve R$ {cliente.saldoDevedor.toFixed(2)} no total.</p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-            <Button onClick={handlePagamento} disabled={isSubmitting || !pagamentoValor}>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)} className="border-slate-300 text-slate-700 hover:bg-slate-100">Cancelar</Button>
+            <Button onClick={handlePagamento} disabled={isSubmitting || !pagamentoValor} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               {isSubmitting ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : null}
               Confirmar Pagamento
             </Button>

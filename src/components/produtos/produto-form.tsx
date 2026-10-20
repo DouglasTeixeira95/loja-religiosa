@@ -75,107 +75,114 @@ export function ProdutoForm({ initialData }: { initialData?: any }) {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/10">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{isEditing ? 'Editar Produto' : 'Cadastrar Produto'}</h2>
-          <p className="text-muted-foreground text-sm">
+          <h2 className="text-2xl font-bold tracking-tight text-white">{isEditing ? 'Editar Produto' : 'Cadastrar Produto'}</h2>
+          <p className="text-slate-300 text-sm">
             {isEditing ? 'Atualize as informações do produto.' : 'Adicione um novo item ao seu estoque.'}
           </p>
         </div>
       </div>
 
-      <Card className="bg-white/50 backdrop-blur-xl border-slate-200/60 dark:bg-slate-900/50">
+      <Card className="bg-black/20 backdrop-blur-xl border-white/10 text-white">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4 pt-6">
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="code">Código do Produto</Label>
+                <Label htmlFor="code" className="text-slate-200">Código do Produto</Label>
                 <Input 
                   id="code" 
                   placeholder="Ex: 1024"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("code")} 
                 />
                 {form.formState.errors.code && (
-                  <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>
+                  <p className="text-sm text-red-400">{form.formState.errors.code.message}</p>
                 )}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="stock_quantity">Quantidade Inicial</Label>
+                <Label htmlFor="stock_quantity" className="text-slate-200">Quantidade em Estoque</Label>
                 <Input 
                   id="stock_quantity" 
                   type="number" 
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("stock_quantity")} 
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Descrição</Label>
+              <Label htmlFor="description" className="text-slate-200">Descrição</Label>
               <Input 
                 id="description" 
-                placeholder="Ex: Imagem Nossa Senhora 30cm"
+                placeholder="Ex: Alguidar número 4"
+                className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                 {...form.register("description")} 
               />
               {form.formState.errors.description && (
-                <p className="text-sm text-red-500">{form.formState.errors.description.message}</p>
+                <p className="text-sm text-red-400">{form.formState.errors.description.message}</p>
               )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="size">Tamanho / Medida</Label>
+                <Label htmlFor="size" className="text-slate-200">Tamanho / Medida</Label>
                 <Input 
                   id="size" 
                   placeholder="Ex: 30cm ou Nº 4"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("size")} 
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cost_price">Preço Pago / Custo Un. (R$)</Label>
+                <Label htmlFor="cost_price" className="text-slate-200">Preço Pago / Custo Un. (R$)</Label>
                 <Input 
                   id="cost_price" 
                   type="number" 
                   step="0.01"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("cost_price")} 
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="unit_price">Preço Venda Un. (R$)</Label>
+                <Label htmlFor="unit_price" className="text-slate-200">Preço Venda Un. (R$)</Label>
                 <Input 
                   id="unit_price" 
                   type="number" 
                   step="0.01"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("unit_price")} 
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="box_price">Preço Cx. Fechada (R$)</Label>
+                <Label htmlFor="box_price" className="text-slate-200">Preço Cx. Fechada (R$)</Label>
                 <Input 
                   id="box_price" 
                   type="number" 
                   step="0.01"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("box_price")} 
                 />
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/15 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                <p className="text-sm font-medium text-emerald-300">
                   Valor Total Investido neste Produto
                 </p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-xs text-slate-300">
                   Multiplicação automática: {watchedStock} un. × R$ {watchedCost.toFixed(2)} = R$ {totalInvested.toFixed(2)}
                 </p>
               </div>
-              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-2xl font-bold text-emerald-400">
                 R$ {totalInvested.toFixed(2)}
               </div>
             </div>
@@ -183,8 +190,9 @@ export function ProdutoForm({ initialData }: { initialData?: any }) {
           </CardContent>
           
           <div className="flex justify-end p-6 pt-0">
-            <Button type="submit" className="bg-primary">
-              <Save className="mr-2 h-4 w-4" /> Salvar Produto
+            <Button type="submit" disabled={isSubmitting} className="bg-[#d4af37] text-[#2a0845] hover:bg-[#b8860b] font-bold">
+              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              Salvar Produto
             </Button>
           </div>
         </form>

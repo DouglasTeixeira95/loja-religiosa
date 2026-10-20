@@ -56,58 +56,62 @@ export function ClienteForm() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/10">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Cadastrar Cliente</h2>
-          <p className="text-muted-foreground text-sm">
+          <h2 className="text-2xl font-bold tracking-tight text-white">Cadastrar Cliente</h2>
+          <p className="text-slate-300 text-sm">
             Adicione um novo cliente para poder abrir conta crediário.
           </p>
         </div>
       </div>
 
-      <Card className="bg-white/50 backdrop-blur-xl border-slate-200/60 dark:bg-slate-900/50">
+      <Card className="bg-black/20 backdrop-blur-xl border-white/10 text-white">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4 pt-6">
             
             <div className="space-y-2">
-              <Label htmlFor="name">Nome Completo *</Label>
+              <Label htmlFor="name" className="text-slate-200">Nome Completo *</Label>
               <Input 
                 id="name" 
                 placeholder="Ex: Maria das Graças"
+                className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                 {...form.register("name")} 
               />
               {form.formState.errors.name && (
-                <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+                <p className="text-sm text-red-400">{form.formState.errors.name.message}</p>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="cpf">CPF</Label>
+                <Label htmlFor="cpf" className="text-slate-200">CPF</Label>
                 <Input 
                   id="cpf" 
                   placeholder="000.000.000-00"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("cpf")} 
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefone / WhatsApp</Label>
+                <Label htmlFor="phone" className="text-slate-200">Telefone / WhatsApp</Label>
                 <Input 
                   id="phone" 
                   placeholder="(00) 00000-0000"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                   {...form.register("phone")} 
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Endereço</Label>
+              <Label htmlFor="address" className="text-slate-200">Endereço</Label>
               <Input 
                 id="address" 
                 placeholder="Rua, Número, Bairro, Cidade"
+                className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
                 {...form.register("address")} 
               />
             </div>
@@ -115,7 +119,7 @@ export function ClienteForm() {
           </CardContent>
           
           <div className="flex justify-end p-6 pt-0">
-            <Button type="submit" className="bg-primary" disabled={isSubmitting}>
+            <Button type="submit" className="bg-[#d4af37] text-[#2a0845] hover:bg-[#b8860b] font-bold" disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />} 
               Salvar Cliente
             </Button>

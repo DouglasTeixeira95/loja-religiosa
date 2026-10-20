@@ -42,3 +42,18 @@ export async function criarLancamento(data: {
   revalidatePath('/lancamentos')
   return { success: true, data: lancamento }
 }
+
+export async function excluirLancamento(id: string) {
+  const { error } = await supabase
+    .from('expenses')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Erro ao excluir lançamento:', error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath('/lancamentos')
+  return { success: true }
+}
