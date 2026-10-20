@@ -8,6 +8,7 @@ export async function criarProduto(data: {
   description: string
   stock_quantity: number
   size?: string
+  cost_price?: number
   unit_price: number
   box_price: number
 }) {
@@ -21,7 +22,7 @@ export async function criarProduto(data: {
         size: data.size,
         unit_price: data.unit_price,
         box_price: data.box_price,
-        cost_price: 0
+        cost_price: data.cost_price ?? 0
       }
     ])
     .select()

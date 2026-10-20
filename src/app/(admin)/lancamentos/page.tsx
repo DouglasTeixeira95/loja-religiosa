@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowDownRight, Plus, Search, Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { criarLancamento } from "@/app/actions/lancamentos"
+import { criarLancamento, listarLancamentos } from "@/app/actions/lancamentos"
 
 type Lancamento = {
   id: string;
@@ -22,14 +22,34 @@ export default function LancamentosPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<'COMPRA_ESTOQUE' | 'DESPESA_GERAL'>('DESPESA_GERAL')
   const [description, setDescription] = useState("")
+  const [quantity, setQuantity] = useState("1")
+  const [unitPrice, setUnitPrice] = useState("")
   const [amount, setAmount] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    listarLancamentos().then((data) => {
+      setLancamentos(data as Lancamento[])
+    })
+  }, [])
 
   const openModal = (type: 'COMPRA_ESTOQUE' | 'DESPESA_GERAL') => {
     setModalType(type)
     setDescription("")
+    setQuantity("1")
+    setUnitPrice("")
     setAmount("")
     setIsModalOpen(true)
+  }
+
+  const handleQuantityOrUnitChange = (newQty: string, newUnit: string) => {
+    setQuantity(newQty)
+    setUnitPrice(newUnit)
+    const q = parseFloat(newQty.replace(',', '.'))
+    const u = parseFloat(newUnit.replace(',', '.'))
+    if (!isNaN(q) && !isNaN(u) && q > 0 && u >= 0) {
+      setAmount((q * u).toFixed(2))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,10 +58,17 @@ export default function LancamentosPage() {
 
     setIsSubmitting(true)
     const valorNum = parseFloat(amount.replace(',', '.'))
+    const q = parseFloat(quantity.replace(',', '.'))
+    const u = parseFloat(unitPrice.replace(',', '.'))
+
+    const finalDescription =
+      modalType === 'COMPRA_ESTOQUE' && !isNaN(q) && !isNaN(u) && q > 0 && u > 0
+        ? `${description} (${q} un. x R$ ${u.toFixed(2)})`
+        : description
     
     // A data assumida será o momento do clique via banco de dados e client-side
     const response = await criarLancamento({
-      description,
+      description: finalDescription,
       amount: valorNum,
       type: modalType
     })
@@ -159,15 +186,46 @@ export default function LancamentosPage() {
                 <Label htmlFor="description">Descrição</Label>
                 <Input 
                   id="description" 
-                  placeholder="Ex: Compra de 50 caixas de velas" 
+                  placeholder={modalType === 'COMPRA_ESTOQUE' ? "Ex: Alguidar número 4" : "Ex: Conta de Energia"} 
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required 
                   autoFocus
                 />
               </div>
+
+              {modalType === 'COMPRA_ESTOQUE' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="quantity">Quantidade Comprada</Label>
+                    <Input 
+                      id="quantity" 
+                      placeholder="Ex: 5" 
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={quantity}
+                      onChange={(e) => handleQuantityOrUnitChange(e.target.value, unitPrice)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="unitPrice">Valor Pago por Un. (R$)</Label>
+                    <Input 
+                      id="unitPrice" 
+                      placeholder="Ex: 20,00" 
+                      type="number"
+                      step="0.01"
+                      value={unitPrice}
+                      onChange={(e) => handleQuantityOrUnitChange(quantity, e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="amount">Valor (R$)</Label>
+                <Label htmlFor="amount">
+                  {modalType === 'COMPRA_ESTOQUE' ? 'Valor Total Investido (R$)' : 'Valor (R$)'}
+                </Label>
                 <Input 
                   id="amount" 
                   placeholder="0,00" 
@@ -177,6 +235,11 @@ export default function LancamentosPage() {
                   onChange={(e) => setAmount(e.target.value)}
                   required 
                 />
+                {modalType === 'COMPRA_ESTOQUE' && unitPrice && quantity && (
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                    Cálculo automático: {quantity} × R$ {parseFloat(unitPrice.replace(',', '.') || '0').toFixed(2)} = R$ {amount}
+                  </p>
+                )}
               </div>
               <div className="pt-4 flex justify-end gap-3">
                 <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Cancelar</Button>

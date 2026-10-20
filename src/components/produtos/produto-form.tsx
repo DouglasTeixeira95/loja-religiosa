@@ -17,6 +17,7 @@ const produtoSchema = z.object({
   description: z.string().min(3, "A descrição deve ter no mínimo 3 caracteres"),
   stock_quantity: z.coerce.number().int().min(0, "O estoque não pode ser negativo"),
   size: z.string().optional(),
+  cost_price: z.coerce.number().min(0, "O preço de custo não pode ser negativo"),
   unit_price: z.coerce.number().min(0, "O preço não pode ser negativo"),
   box_price: z.coerce.number().min(0, "O preço da caixa não pode ser negativo"),
 })
@@ -30,15 +31,23 @@ export function ProdutoForm({ initialData }: { initialData?: any }) {
   
   const form = useForm<ProdutoFormValues>({
     resolver: zodResolver(produtoSchema),
-    defaultValues: initialData || {
+    defaultValues: initialData ? {
+      ...initialData,
+      cost_price: initialData.cost_price ?? 0,
+    } : {
       code: "",
       description: "",
       stock_quantity: 0,
       size: "",
+      cost_price: 0,
       unit_price: 0,
       box_price: 0,
     }
   })
+
+  const watchedStock = Number(form.watch("stock_quantity")) || 0
+  const watchedCost = Number(form.watch("cost_price")) || 0
+  const totalInvested = watchedStock * watchedCost
 
   const onSubmit = async (data: ProdutoFormValues) => {
     setIsSubmitting(true)
@@ -116,18 +125,28 @@ export function ProdutoForm({ initialData }: { initialData?: any }) {
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="size">Tamanho / Medida</Label>
                 <Input 
                   id="size" 
-                  placeholder="Ex: 30cm"
+                  placeholder="Ex: 30cm ou Nº 4"
                   {...form.register("size")} 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cost_price">Preço Pago / Custo Un. (R$)</Label>
+                <Input 
+                  id="cost_price" 
+                  type="number" 
+                  step="0.01"
+                  {...form.register("cost_price")} 
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="unit_price">Preço Unitário (R$)</Label>
+                <Label htmlFor="unit_price">Preço Venda Un. (R$)</Label>
                 <Input 
                   id="unit_price" 
                   type="number" 
@@ -144,6 +163,20 @@ export function ProdutoForm({ initialData }: { initialData?: any }) {
                   step="0.01"
                   {...form.register("box_price")} 
                 />
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                  Valor Total Investido neste Produto
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Multiplicação automática: {watchedStock} un. × R$ {watchedCost.toFixed(2)} = R$ {totalInvested.toFixed(2)}
+                </p>
+              </div>
+              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                R$ {totalInvested.toFixed(2)}
               </div>
             </div>
 
