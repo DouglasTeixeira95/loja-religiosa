@@ -3,9 +3,35 @@
 import { supabase } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
 
+const SUPPLIER_SEPARATOR = ' || FORN:'
+
+function packDescriptionWithSupplier(description: string, supplier?: string) {
+  const cleanDesc = (description || '').split(SUPPLIER_SEPARATOR)[0].trim()
+  const cleanSupplier = (supplier || '').trim()
+  return cleanSupplier ? `${cleanDesc}${SUPPLIER_SEPARATOR}${cleanSupplier}` : cleanDesc
+}
+
+function unpackProduct(product: any) {
+  if (!product) return product
+  const rawDesc = String(product.description || '')
+  if (rawDesc.includes(SUPPLIER_SEPARATOR)) {
+    const [cleanDesc, supplierPart] = rawDesc.split(SUPPLIER_SEPARATOR)
+    return {
+      ...product,
+      description: cleanDesc.trim(),
+      supplier: (supplierPart || '').trim(),
+    }
+  }
+  return {
+    ...product,
+    supplier: product.supplier || '',
+  }
+}
+
 export async function criarProduto(data: {
   code: string
   description: string
+  supplier?: string
   stock_quantity: number
   size?: string
   cost_price?: number
@@ -17,7 +43,7 @@ export async function criarProduto(data: {
     .insert([
       {
         code: data.code,
-        description: data.description,
+        description: packDescriptionWithSupplier(data.description, data.supplier),
         stock_quantity: data.stock_quantity,
         size: data.size,
         unit_price: data.unit_price,
@@ -34,7 +60,7 @@ export async function criarProduto(data: {
   }
 
   revalidatePath('/produtos')
-  return { success: true, data: produto }
+  return { success: true, data: unpackProduct(produto) }
 }
 
 export async function listarProdutos() {
@@ -48,13 +74,19 @@ export async function listarProdutos() {
     return []
   }
 
-  return data
+  return (data || []).map(unpackProduct)
 }
 
 export async function atualizarProduto(id: string, data: any) {
+  const { supplier, ...rest } = data
+  const payload = {
+    ...rest,
+    description: packDescriptionWithSupplier(data.description, supplier),
+  }
+
   const { error } = await supabase
     .from('products')
-    .update(data)
+    .update(payload)
     .eq('id', id)
 
   if (error) {
@@ -78,7 +110,7 @@ export async function buscarProdutoPorId(id: string) {
     return null
   }
   
-  return data
+  return unpackProduct(data)
 }
 
 export async function buscarProduto(term: string) {
@@ -93,7 +125,7 @@ export async function buscarProduto(term: string) {
     return { success: false, error: 'Produto não encontrado no banco de dados.' }
   }
 
-  return { success: true, data: data[0] }
+  return { success: true, data: unpackProduct(data[0]) }
 }
 
 export async function excluirProduto(id: string) {

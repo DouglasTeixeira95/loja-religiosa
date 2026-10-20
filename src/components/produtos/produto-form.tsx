@@ -15,6 +15,7 @@ import { useState } from "react"
 const produtoSchema = z.object({
   code: z.string().min(1, "O código é obrigatório"),
   description: z.string().min(3, "A descrição deve ter no mínimo 3 caracteres"),
+  supplier: z.string().optional(),
   stock_quantity: z.coerce.number().int().min(0, "O estoque não pode ser negativo"),
   size: z.string().optional(),
   cost_price: z.coerce.number().min(0, "O preço de custo não pode ser negativo"),
@@ -33,10 +34,12 @@ export function ProdutoForm({ initialData }: { initialData?: any }) {
     resolver: zodResolver(produtoSchema),
     defaultValues: initialData ? {
       ...initialData,
+      supplier: initialData.supplier ?? "",
       cost_price: initialData.cost_price ?? 0,
     } : {
       code: "",
       description: "",
+      supplier: "",
       stock_quantity: 0,
       size: "",
       cost_price: 0,
@@ -115,17 +118,29 @@ export function ProdutoForm({ initialData }: { initialData?: any }) {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-slate-200">Descrição</Label>
-              <Input 
-                id="description" 
-                placeholder="Ex: Alguidar número 4"
-                className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
-                {...form.register("description")} 
-              />
-              {form.formState.errors.description && (
-                <p className="text-sm text-red-400">{form.formState.errors.description.message}</p>
-              )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-slate-200">Descrição do Produto</Label>
+                <Input 
+                  id="description" 
+                  placeholder="Ex: Alguidar número 4"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
+                  {...form.register("description")} 
+                />
+                {form.formState.errors.description && (
+                  <p className="text-sm text-red-400">{form.formState.errors.description.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="supplier" className="text-slate-200">Fornecedor (Opcional)</Label>
+                <Input 
+                  id="supplier" 
+                  placeholder="Ex: Cerâmica São José"
+                  className="bg-black/30 border-white/15 text-white placeholder:text-slate-400"
+                  {...form.register("supplier")} 
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

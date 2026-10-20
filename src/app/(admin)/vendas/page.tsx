@@ -50,7 +50,7 @@ export default function VendasPage() {
   const handlePrintReceipt = (venda: any) => {
     // Converter itens do bd pro formato do ticket
     const items = venda.sale_items?.map((item: any) => ({
-      name: item.products?.description || 'Produto',
+      name: (item.products?.description || 'Produto').split(' || FORN:')[0].trim(),
       qty: item.quantity,
       price: item.unit_price
     })) || []
