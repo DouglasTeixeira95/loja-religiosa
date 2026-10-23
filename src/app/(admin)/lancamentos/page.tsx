@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { criarLancamento, listarLancamentos, excluirLancamento } from "@/app/actions/lancamentos"
+import { listarProdutos } from "@/app/actions/produtos"
 
 type Lancamento = {
   id: string;
@@ -18,11 +19,13 @@ type Lancamento = {
 
 export default function LancamentosPage() {
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
+  const [produtos, setProdutos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<'COMPRA_ESTOQUE' | 'DESPESA_GERAL'>('DESPESA_GERAL')
+  const [selectedProductId, setSelectedProductId] = useState("")
   const [description, setDescription] = useState("")
   const [quantity, setQuantity] = useState("1")
   const [unitPrice, setUnitPrice] = useState("")
@@ -31,8 +34,12 @@ export default function LancamentosPage() {
 
   const carregarLancamentos = async () => {
     setLoading(true)
-    const data = await listarLancamentos()
+    const [data, prods] = await Promise.all([
+      listarLancamentos(),
+      listarProdutos(),
+    ])
     setLancamentos(data as Lancamento[])
+    setProdutos(prods || [])
     setLoading(false)
   }
 
@@ -42,11 +49,31 @@ export default function LancamentosPage() {
 
   const openModal = (type: 'COMPRA_ESTOQUE' | 'DESPESA_GERAL') => {
     setModalType(type)
+    setSelectedProductId("")
     setDescription("")
     setQuantity("1")
     setUnitPrice("")
     setAmount("")
     setIsModalOpen(true)
+  }
+
+  const handleSelectProduct = (prodId: string) => {
+    setSelectedProductId(prodId)
+    if (!prodId) return
+    const prod = produtos.find((p) => p.id === prodId)
+    if (prod) {
+      const descPadrao = prod.size
+        ? `Reposição: ${prod.description} (${prod.size})`
+        : `Reposição: ${prod.description}`
+      setDescription(descPadrao)
+      const custo = Number(prod.cost_price || 0)
+      if (custo > 0) {
+        const custoStr = custo.toFixed(2)
+        setUnitPrice(custoStr)
+        const q = parseFloat(quantity.replace(',', '.')) || 1
+        setAmount((q * custo).toFixed(2))
+      }
+    }
   }
 
   const handleQuantityOrUnitChange = (newQty: string, newUnit: string) => {
@@ -87,13 +114,33 @@ export default function LancamentosPage() {
     const response = await criarLancamento({
       description: finalDescription,
       amount: valorNum,
-      type: modalType
+      type: modalType,
+      productId: modalType === 'COMPRA_ESTOQUE' && selectedProductId ? selectedProductId : undefined,
+      addedQuantity: modalType === 'COMPRA_ESTOQUE' && !isNaN(q) && q > 0 ? Math.round(q) : undefined,
+      newCostPrice: modalType === 'COMPRA_ESTOQUE' && !isNaN(u) && u > 0 ? u : undefined,
     })
 
     if (response.success) {
       setLancamentos([response.data as Lancamento, ...lancamentos])
+      if (modalType === 'COMPRA_ESTOQUE' && selectedProductId && !isNaN(q) && q > 0) {
+        setProdutos(
+          produtos.map((p) =>
+            p.id === selectedProductId
+              ? {
+                  ...p,
+                  stock_quantity: Number(p.stock_quantity || 0) + Math.round(q),
+                  cost_price: !isNaN(u) && u > 0 ? u : p.cost_price,
+                }
+              : p
+          )
+        )
+      }
       setIsModalOpen(false)
-      alert('Lançamento salvo com sucesso!')
+      alert(
+        modalType === 'COMPRA_ESTOQUE' && selectedProductId
+          ? 'Compra lançada e estoque somado automaticamente com sucesso!'
+          : 'Lançamento salvo com sucesso!'
+      )
     } else {
       alert('Erro ao salvar lançamento: ' + response.error)
     }
@@ -240,6 +287,32 @@ export default function LancamentosPage() {
               <p className="text-white/80 text-sm mt-1">A data e hora atuais serão registradas automaticamente.</p>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {modalType === 'COMPRA_ESTOQUE' && (
+                <div className="space-y-2">
+                  <Label htmlFor="productSelect" className="text-slate-800 font-semibold">
+                    Vincular a um Produto do Estoque (Soma Automática)
+                  </Label>
+                  <select
+                    id="productSelect"
+                    value={selectedProductId}
+                    onChange={(e) => handleSelectProduct(e.target.value)}
+                    className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
+                  >
+                    <option value="">-- Compra avulsa / geral (não somar produto específico) --</option>
+                    {produtos.map((prod) => (
+                      <option key={prod.id} value={prod.id}>
+                        [{prod.code}] {prod.description} {prod.size ? `(${prod.size})` : ''} — Estoque atual: {prod.stock_quantity}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedProductId && (
+                    <p className="text-xs text-emerald-700 font-medium">
+                      ✓ Ao salvar, a quantidade comprada será somada automaticamente ao estoque deste produto.
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-slate-800 font-semibold">Descrição</Label>
                 <Input 

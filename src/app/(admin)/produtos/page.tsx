@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table"
 import { listarProdutos } from "@/app/actions/produtos"
 import { DeleteProductButton } from "@/components/produtos/delete-product-button"
+import { RestockProductButton } from "@/components/produtos/restock-product-button"
 
 export default async function ProductsPage({
   searchParams,
@@ -139,6 +140,7 @@ export default async function ProductsPage({
                     <TableCell className="text-right font-bold text-[#d4af37]">R$ {Number(produto.unit_price || 0).toFixed(2)}</TableCell>
                     <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
+                        <RestockProductButton product={produto} />
                         <Link href={`/produtos/${produto.id}/editar`}>
                           <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
                             Editar
